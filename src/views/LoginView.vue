@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import {ref, watch} from "vue";
 
+const userName = ref('');
+const password = ref('');
 </script>
 
 <template>

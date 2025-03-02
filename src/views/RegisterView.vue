@@ -7,7 +7,7 @@ const confirmPassword = ref('');
 const userPhone = ref('');
 const passwordError = ref('');
 const confirmPasswordError = ref('');
-const confirmPasswordTouched = ref(false);
+// const confirmPasswordTouched = ref(false);
 
 const validatePassword = (password: string) => {
   const hasUpperCase = /[A-Z]/.test(password);
@@ -73,7 +73,7 @@ const handleSubmit = () => {
           <label for="confirmPassword">确认密码</label>
           <span class="highlight"></span>
         </div>
-        <div v-show="confirmPasswordTouched" v-if="confirmPasswordError" class="error">{{ confirmPasswordError }}</div>
+<!--        <div v-show="confirmPasswordTouched" v-if="confirmPasswordError" class="error">{{ confirmPasswordError }}</div>-->
         <button type="submit" class="submit-btn">注册</button>
         <div class="form-footer">
           <span>已有账号？</span>
@@ -86,7 +86,8 @@ const handleSubmit = () => {
 
 <style scoped>
 .registerPage {
-  min-height: 100vh;
+  min-height: 50vh;
+  min-width: 50vh;
   display: flex;
   align-items: center;
   justify-content: center;
