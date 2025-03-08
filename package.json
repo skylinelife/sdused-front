@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@types/axios": "^0.14.4",
+    "ant-design-vue": "^4.2.6",
     "axios": "^1.8.1",
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",

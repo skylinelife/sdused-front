@@ -22,6 +22,8 @@ const validatePassword = (password: string) => {
 watch(password, (newPassword) => {
   if (!validatePassword(newPassword)) {
     passwordError.value = '密码必须包含大写字母、数字、小写字母、特殊符号中的至少三种。';
+  } else if (newPassword.length < 6 || newPassword.length > 20) {
+    passwordError.value = '密码应为6-20位。';
   } else {
     passwordError.value = '';
   }
@@ -73,7 +75,7 @@ const handleSubmit = () => {
           <label for="confirmPassword">确认密码</label>
           <span class="highlight"></span>
         </div>
-<!--        <div v-show="confirmPasswordTouched" v-if="confirmPasswordError" class="error">{{ confirmPasswordError }}</div>-->
+        <!--        <div v-show="confirmPasswordTouched" v-if="confirmPasswordError" class="error">{{ confirmPasswordError }}</div>-->
         <button type="submit" class="submit-btn">注册</button>
         <div class="form-footer">
           <span>已有账号？</span>
