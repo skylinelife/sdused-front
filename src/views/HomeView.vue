@@ -7,12 +7,6 @@ import {ProLayout} from "@ant-design/pro-components";
 
 <template>
   <main>
-    <ProLayout
-      title="blog",
-
-    >
-
-    </ProLayout>
-    <TheWelcome />
+    <h1>介似首页</h1>
   </main>
 </template>

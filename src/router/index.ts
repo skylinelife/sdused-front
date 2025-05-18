@@ -4,6 +4,8 @@ import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import TempRegisterView from "@/views/TempRegisterView.vue";
 import ManageView from "@/views/ManageView.vue";
+import PersonView from "@/views/PersonView.vue";
+import RecommendView from "@/views/RecommendView.vue";
 import {userInfoStore} from "@/stores/user.ts";
 
 const router = createRouter({
@@ -33,19 +35,29 @@ const router = createRouter({
             name:'manage',
             component:ManageView,
         },
+        {
+            path: '/recommend',
+            name: 'Recommend',
+            component: RecommendView,
+        },
+        {
+            path: '/person',
+            name: 'Person',
+            component: PersonView,
+        },
     ],
 })
 
-router.beforeEach((to, from, next) => {
-    const store=userInfoStore()
-    let isLogin=store.isLogin
-    if(to.name!=='login'&&to.name!=='register'&&!isLogin){
-        next({name:'login'})
-    }else if(to.name=='login'&&isLogin){
-        next({name:'home'})
-    }else{
-        next()
-    }
-})
+// router.beforeEach((to, from, next) => {
+//     const store=userInfoStore()
+//     let isLogin=store.isLogin
+//     if(to.name!=='login'&&to.name!=='register'&&!isLogin){
+//         next({name:'login'})
+//     }else if(to.name=='login'&&isLogin){
+//         next({name:'home'})
+//     }else{
+//         next()
+//     }
+// })
 
 export default router
