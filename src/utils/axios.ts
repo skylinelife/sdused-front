@@ -1,51 +1,107 @@
 import axios from "axios";
-const request =axios.create({
-    baseURL:'',
-    timeout:5000,
-})
+import type { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+import { message as AntMessage } from 'ant-design-vue';
 
+const baseURL = '/api';
 
+const request = axios.create({
+    baseURL: baseURL,
+    timeout: 5000,
+});
+
+// 请求拦截器
 request.interceptors.request.use(
     (config) => {
-        // 在发送请求之前
+
+        const token = localStorage.getItem('authToken');
+        if (token && config.headers) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
 
         return config;
     },
-    (error) => {
-
+    (error: AxiosError) => {
+        console.error('Request Error:', error);
         return Promise.reject(error);
     }
 );
-
 
 // 响应拦截器
 request.interceptors.response.use(
-    response => {
-        // 对响应数据做些什么
-        return response.data;
+    (response: AxiosResponse) => {
+
+        const res = response.data;
+
+        if (res.code !== 200 && res.code !== 0) {
+            AntMessage.error(res.message || 'Error');
+
+            if (res.code === 401 || res.code === 403) {
+                console.error('认证失败或无权限，请重新登录');
+                localStorage.removeItem('authToken');
+            }
+            return Promise.reject(new Error(res.message || 'Error'));
+        } else {
+            return res.data;
+        }
     },
-    error => {
-        // 对响应错误做些什么
+    (error: AxiosError) => {
+        console.error('Response Error:', error);
+
+        let errorMessage = '请求失败，请稍后再试';
+
         if (error.response) {
-            switch (error.response.status) {
+            const status = error.response.status;
+            const data: any = error.response.data;
+            switch (status) {
+                case 400:
+                    errorMessage = data?.message || '请求参数错误';
+                    break;
                 case 401:
-                    // 处理未授权的错误
-                    console.error('未授权，请重新登录');
+                    errorMessage = '未授权，请重新登录';
+                    // router.push('/login');
+                    localStorage.removeItem('authToken');
+                    // window.location.href = '/login';
+                    break;
+                case 403:
+                    errorMessage = '禁止访问';
                     break;
                 case 404:
-                    // 处理资源不存在的错误
-                    console.error('请求的资源不存在');
+                    errorMessage = '请求的资源不存在';
+                    break;
+                case 500:
+                case 502:
+                case 503:
+                case 504:
+                    errorMessage = `服务器错误 (${status})，请稍后再试`;
                     break;
                 default:
-                    console.error('请求失败，请稍后再试');
+                    errorMessage = data?.message || `请求失败 (${status})`;
             }
         } else if (error.request) {
-            console.error('请求失败，请检查网络连接');
+            errorMessage = '请求超时或网络连接错误，请检查网络';
         } else {
-            console.error('请求配置错误');
+            errorMessage = '请求配置错误';
         }
+
+        AntMessage.error(errorMessage);
         return Promise.reject(error);
     }
 );
 
-export default request
+export default request;
+
+export const get = <T = any>(url: string, params?: object, config?: AxiosRequestConfig): Promise<T> => {
+    return request.get<T, T>(url, { params, ...config });
+};
+
+export const post = <T = any>(url: string, data?: object, config?: AxiosRequestConfig): Promise<T> => {
+    return request.post<T, T>(url, data, config);
+};
+
+export const put = <T = any>(url: string, data?: object, config?: AxiosRequestConfig): Promise<T> => {
+    return request.put<T, T>(url, data, config);
+};
+
+export const del = <T = any>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    return request.delete<T, T>(url, config);
+};

@@ -6,6 +6,9 @@ import TempRegisterView from "@/views/TempRegisterView.vue";
 import ManageView from "@/views/ManageView.vue";
 import PersonView from "@/views/PersonView.vue";
 import RecommendView from "@/views/RecommendView.vue";
+import UserManagementPage from "@/components/page/UserManagementPage.vue";
+import ArticleManagementPage from "@/components/page/ArticleManagementPage.vue";
+import StatisticsPage from "@/components/page/StatisticsPage.vue";
 import {userInfoStore} from "@/stores/user.ts";
 
 const router = createRouter({
@@ -34,6 +37,23 @@ const router = createRouter({
             path:'/manage',
             name:'manage',
             component:ManageView,
+            children: [
+                {
+                    path: 'users',
+                    name: 'UserManagement',
+                    component: UserManagementPage,
+                },
+                {
+                    path: 'articles',
+                    name: 'ArticleManagement',
+                    component: ArticleManagementPage,
+                },
+                {
+                    path: 'statistics',
+                    name: 'Statistics',
+                    component: StatisticsPage,
+                },
+            ],
         },
         {
             path: '/recommend',
