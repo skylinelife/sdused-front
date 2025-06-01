@@ -18,8 +18,27 @@ export async function register(data:any) {
 //提交登录
 export async function login(data:any) {
     return request({
-        url:'user/login',
+        url:'/user/login',
         method:'post',
         data:data,
     })
 }
+
+//用户信息修改
+// export async function editUserInfo(data:any){
+//     return request({
+//         url:''
+//     })
+// }
+
+
+//文章推荐
+// export async function recommend(data:any){
+//     return request({
+//         url:'',
+//         method:'get',
+//         data:data,
+//     })
+// }
+
+//

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {RouterLink, RouterView} from 'vue-router'
+import {RouterLink, RouterView,useRouter} from 'vue-router'
 import NavigationBar from './components/NavigationBar.vue';
 import HelloWorld from './components/HelloWorld.vue';
 import {userInfoStore} from './stores/user.ts'
@@ -7,7 +7,7 @@ import {computed} from 'vue'
 
 const store=userInfoStore()
 const isLogin=computed(()=>store.isLogin)
-const router=
+const router=useRouter();
 
 const logout=()=>{
   store.clearUser();
