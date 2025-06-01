@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue";
+import {useRouter} from "vue-router";
+import {login} from "../api/user.ts"
+import {userInfoStore} from "@/stores/user.ts";
 
+const router=useRouter();
+const userStore=userInfoStore();
 const formState = reactive({
-  userName: '',
+  user_name: '',
   password: '',
   remember: false,
 });
@@ -23,6 +28,34 @@ watch(
 if (localStorage.getItem('remember')) {
   Object.assign(formState, JSON.parse(localStorage.getItem('remember') || '{}'));
 }
+
+const handleSubmit = async () =>  {
+  const data = {
+    account_number: 1,
+    user_name: formState.user_name,
+    password: formState.password,
+  };
+  console.log("loginMessage",formState);
+  try{
+    const res = await login(data);
+    console.log(res);
+    if(res.message === "Login successful"){
+      userStore.isLogin = true;
+      userStore.userInfo.user_name= res.user_name;
+        //TODO
+      console.log(userStore.userInfo.user_name);
+      if(userStore.isLogin===true) {
+        router.push('/recommend');
+      }
+    }
+    else{
+      console.log('error');
+    }
+
+  }catch(err){
+    console.log(err)
+  }
+};
 </script>
 
 <template>
@@ -34,16 +67,17 @@ if (localStorage.getItem('remember')) {
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }"
         autocomplete="off"
+        @finish="handleSubmit"
     >
       <h1 class="title">登录</h1>
       <p class="description">欢迎使用我们的服务！</p>
       <a-form-item
           class="input"
           label="用户名"
-          name="userName"
+          name="user_name"
           :rules="[{ required: true, message: '请输入您的用户名！' }]"
       >
-        <a-input v-model:value="formState.userName" placeholder="请输入用户名" />
+        <a-input v-model:value="formState.user_name" placeholder="请输入用户名" />
       </a-form-item>
 
       <a-form-item

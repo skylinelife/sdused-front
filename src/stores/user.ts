@@ -7,7 +7,7 @@ export const userInfoStore=defineStore('userInfo',{
         //登录用户信息
         userInfo:{
             userId:null,
-            userName:null,
+            user_name:null,
             userPermission:null,
             userPhone:null,
         }
