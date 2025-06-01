@@ -2,7 +2,8 @@ import axios from "axios";
 import type { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 import { message as AntMessage } from 'ant-design-vue';
 
-const baseURL = '/api';
+
+const baseURL = 'http://127.0.0.1:8000/api';
 
 const request = axios.create({
     baseURL: baseURL,

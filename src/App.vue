@@ -1,12 +1,25 @@
 <script setup lang="ts">
 import {RouterLink, RouterView} from 'vue-router'
 import NavigationBar from './components/NavigationBar.vue';
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from './components/HelloWorld.vue';
+import {userInfoStore} from './stores/user.ts'
+import {computed} from 'vue'
+
+const store=userInfoStore()
+const isLogin=computed(()=>store.isLogin)
+const router=
+
+const logout=()=>{
+  store.clearUser();
+  router.push('/login');
+}
+
 </script>
 
 <template>
-  <header>
+  <header v-if="isLogin">
     <NavigationBar/>
+    <a-button class="logout-button" @click="logout">退出登录</a-button>
   </header>
 
   <RouterView/>

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
+import request from '../utils/axios.ts';
+import {register} from "@/api/user.ts";
 
-const userName = ref('');
+const user_name = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const userPhone = ref('');
@@ -13,7 +15,7 @@ const validatePassword = (password: string) => {
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
 
   const validConditions = [hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar].filter(Boolean).length;
   return validConditions >= 3;
@@ -24,6 +26,7 @@ watch(password, (newPassword) => {
     passwordError.value = '密码必须包含大写字母、数字、小写字母、特殊符号中的至少三种。';
   } else if (newPassword.length < 6 || newPassword.length > 20) {
     passwordError.value = '密码应为6-20位。';
+    console.log(newPassword);
   } else {
     passwordError.value = '';
   }
@@ -37,12 +40,41 @@ watch([password, confirmPassword], ([newPassword, newConfirmPassword]) => {
   }
 });
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (passwordError.value || confirmPasswordError.value) {
     // 如果有错误，不提交表单
+    console.log("Wrong");
+    console.log(passwordError.value);
     return;
   }
-  // 继续处理表单提交
+  else {
+    // 继续处理表单提交
+    const data = {
+      user_name: user_name.value,
+      password: password.value,
+      userPhone: userPhone.value,
+      sex: 'a',
+      email: 'a',
+      article_num: 1,
+      comment_num: 1,
+      commented_count: 1,
+      authority: 1,
+      account_number: 9,
+    };
+
+    try {
+      // 调用后端接口
+      const userdata = await register(data);
+      console.log(userdata);
+      alert('注册成功！请登录。');
+      // 例如使用路由跳转登录页（需要导入vue-router的useRouter）
+      // router.push('/login');
+
+    } catch (error) {
+      alert('注册失败，请稍后重试。');
+      console.error(error);
+    }
+  }
 };
 </script>
 
@@ -55,8 +87,8 @@ const handleSubmit = () => {
       </div>
       <form class="form" @submit.prevent="handleSubmit">
         <div class="input">
-          <input type="text" id="userName" v-model="userName" required maxlength="20"/>
-          <label for="userName">用户名</label>
+          <input type="text" id="user_name" v-model="user_name" required maxlength="20"/>
+          <label for="user_name">用户名</label>
           <span class="highlight"></span>
         </div>
         <div class="input">
@@ -93,7 +125,7 @@ const handleSubmit = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0a0a0b 0%, #444855 100%);
+  background: white;
   padding: 20px;
 }
 
