@@ -2,7 +2,7 @@ import axios from "axios";
 import type { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 import { message as AntMessage } from 'ant-design-vue';
 
-const baseURL = '/api';
+const baseURL = 'http://localhost:8000/api';
 
 const request = axios.create({
     baseURL: baseURL,
@@ -28,21 +28,32 @@ request.interceptors.request.use(
 
 // 响应拦截器
 request.interceptors.response.use(
+    // (response: AxiosResponse) => {
+    //
+    //     const res = response.data;
+    //
+    //     if (res.code !== 200 && res.code !== 0) {
+    //         AntMessage.error(res.message || 'Error');
+    //
+    //         if (res.code === 401 || res.code === 403) {
+    //             console.error('认证失败或无权限，请重新登录');
+    //             localStorage.removeItem('authToken');
+    //         }
+    //         return Promise.reject(new Error(res.message || 'Error'));
+    //     } else {
+    //         return res.data;
+    //     }
+    // },
     (response: AxiosResponse) => {
-
-        const res = response.data;
-
-        if (res.code !== 200 && res.code !== 0) {
-            AntMessage.error(res.message || 'Error');
-
-            if (res.code === 401 || res.code === 403) {
-                console.error('认证失败或无权限，请重新登录');
-                localStorage.removeItem('authToken');
-            }
-            return Promise.reject(new Error(res.message || 'Error'));
-        } else {
-            return res.data;
+        if (response.status >= 200 && response.status < 300) {
+            return response.data;
         }
+        const res = response.data;
+        if (res && res.hasOwnProperty('code') && res.code !== 200 && res.code !== 0) {
+            AntMessage.error(res.message || 'Error');
+            return Promise.reject(new Error(res.message || 'Error'));
+        }
+        return res;
     },
     (error: AxiosError) => {
         console.error('Response Error:', error);
@@ -98,10 +109,10 @@ export const post = <T = any>(url: string, data?: object, config?: AxiosRequestC
     return request.post<T, T>(url, data, config);
 };
 
-export const put = <T = any>(url: string, data?: object, config?: AxiosRequestConfig): Promise<T> => {
-    return request.put<T, T>(url, data, config);
-};
-
-export const del = <T = any>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return request.delete<T, T>(url, config);
-};
+// export const put = <T = any>(url: string, data?: object, config?: AxiosRequestConfig): Promise<T> => {
+//     return request.put<T, T>(url, data, config);
+// };
+//
+// export const del = <T = any>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+//     return request.delete<T, T>(url, config);
+// };

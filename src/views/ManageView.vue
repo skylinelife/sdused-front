@@ -63,13 +63,6 @@ watch(
 );
 
 
-const toggleCollapsed = () => {
-
-  collapsed.value = !collapsed.value;
-  state.collapsed = collapsed.value;
-  state.openKeys = collapsed.value ? [] : state.preOpenKeys;
-};
-
 const handleMenuClick = (event: { key: string }) => {
   router.push({ name: event.key });
 };
@@ -78,9 +71,9 @@ const handleMenuClick = (event: { key: string }) => {
 
 <template>
   <a-layout style="min-height: 100vh;display:flex">
-    <a-layout-sider v-model:collapsed="collapsed" collapsible @collapse="toggleCollapsed" @expand="toggleCollapsed">
+    <a-layout-sider v-model:collapsed="collapsed" collapsible>
       <div class="title">
-        <span>BLOG管理端</span>
+        <span v-if="!collapsed">BLOG管理端</span>
       </div>
       <div class="item">
         <a-menu
