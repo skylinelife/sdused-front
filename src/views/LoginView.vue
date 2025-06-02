@@ -13,7 +13,8 @@ const formState = reactive({
 });
 
 // 添加记住密码功能的处理逻辑
-watch(
+watch
+(
   () => formState.remember,
   (newValue) => {
     if (newValue) {
