@@ -16,7 +16,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            redirect:'/login',
+            redirect:'/recommend',
         },
         {
             path: '/login',
@@ -26,7 +26,7 @@ const router = createRouter({
         {
             path:'/register',
             name:'register',
-            component:RegisterView,
+            component:TempRegisterView,
         },
         {
             path:'/home',

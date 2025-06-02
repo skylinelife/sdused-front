@@ -10,16 +10,17 @@ const isLogin=computed(()=>store.isLogin)
 const router=useRouter();
 
 const logout=()=>{
-  store.clearUser();
+  store.clearUserInfo();
   router.push('/login');
 }
 
 </script>
 
 <template>
-  <header v-if="isLogin">
+  <header >
     <NavigationBar/>
-    <a-button class="logout-button" @click="logout">退出登录</a-button>
+    <a-button class="logout-button" @click="logout" v-if="isLogin">退出登录</a-button>
+    <a-button class="logout-button" @click="logout" v-else>登录</a-button>
   </header>
 
   <RouterView/>

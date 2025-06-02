@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { h, ref } from 'vue';
-import { RouterLink } from 'vue-router';
+import { h, ref, watch } from 'vue';
+import { useRoute,RouterLink } from 'vue-router';
 import type { MenuProps } from 'ant-design-vue';
 
-const current = ref<string[]>(['recommend']); //
 
+const current = ref<string[]>(['recommend']); //
+const route = useRoute();
 // const items = ref<MenuProps['items']>([
 //   {
 //     key: 'recommend',
@@ -17,6 +18,20 @@ const current = ref<string[]>(['recommend']); //
 //     title: '个人中心',
 //   },
 // ]);
+watch(
+    () => route.path,
+    (newPath) => {
+      if (newPath.startsWith('/recommend')) {
+        current.value = ['recommend'];
+      } else if (newPath.startsWith('/person')) {
+        current.value = ['person'];
+      } else {
+        current.value = [];
+      }
+    },
+    { immediate: true } // 确保初始加载时也执行
+);
+
 
 </script>
 

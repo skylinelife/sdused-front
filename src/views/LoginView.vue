@@ -4,6 +4,7 @@ import {useRouter} from "vue-router";
 import {login} from "../api/user.ts"
 import {userInfoStore} from "@/stores/user.ts";
 
+
 const router=useRouter();
 const userStore=userInfoStore();
 const formState = reactive({
@@ -11,18 +12,18 @@ const formState = reactive({
   password: '',
   remember: false,
 });
-
+console.log(userStore.userInfo.user_name);
 // 添加记住密码功能的处理逻辑
-watch(
-  () => formState.remember,
-  (newValue) => {
-    if (newValue) {
-      localStorage.setItem('remember', JSON.stringify(formState));
-    } else {
-      localStorage.removeItem('remember');
-    }
-  }
-);
+// watch(
+//   () => formState.remember,
+//   (newValue) => {
+//     if (newValue) {
+//       localStorage.setItem('remember', JSON.stringify(formState));
+//     } else {
+//       localStorage.removeItem('remember');
+//     }
+//   }
+// );
 
 // 在组件挂载时尝试从localStorage中恢复状态
 if (localStorage.getItem('remember')) {
@@ -30,6 +31,11 @@ if (localStorage.getItem('remember')) {
 }
 
 const handleSubmit = async () =>  {
+  if(formState.remember) {
+    localStorage.setItem('remember', JSON.stringify(formState));
+  }else {
+    localStorage.removeItem('remember');
+  }
   const data = {
     account_number: 1,
     user_name: formState.user_name,
@@ -39,9 +45,8 @@ const handleSubmit = async () =>  {
   try{
     const res = await login(data);
     console.log(res);
-    if(res.message === "Login successful"){
-      userStore.isLogin = true;
-      userStore.userInfo.user_name= res.user_name;
+    if(res.data.message === "Login successful"){
+      userStore.setUserInfo(res.data.user_name);
         //TODO
       console.log(userStore.userInfo.user_name);
       if(userStore.isLogin===true) {
@@ -96,7 +101,19 @@ const handleSubmit = async () =>  {
       <a-form-item :wrapper-col="{ offset: 7, span: 10 }">
         <a-button class="ant-btn" type="primary" html-type="submit">登录</a-button>
       </a-form-item>
+      <a-form-item :wrapper-col="{ offset: 7, span: 10 }">
+        <span>还没有账号？
+          <router-link to="/register" style="color: #1890ff;">去注册</router-link>
+        </span>
+      </a-form-item>
+      <a-form-item :wrapper-col="{ offset: 7, span: 10 }">
+        <span>或者
+          <router-link to="/recommend" style="color: #1890ff;">游客访问</router-link>
+        </span>
+      </a-form-item>
     </a-form>
+
+
   </div>
 </template>
 

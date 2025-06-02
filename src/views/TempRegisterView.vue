@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import {reactive, ref, watch} from "vue";
+import request from '../utils/axios.ts';
+import {register} from "@/api/user.ts";
 
 const formState = reactive(
     {
-      userName: '',
+      user_name: '',
       password: '',
       confirmPassword: '',
-      userEmail: '',
+      user_email: '',
       passwordError: '',
       confirmPasswordError: '',
     }
@@ -16,7 +18,7 @@ const validatePassword = (password: string) => {
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
 
   const validConditions = [hasUpperCase, hasLowerCase, hasNumber, hasSpecialChar].filter(Boolean).length;
   return validConditions >= 3;
@@ -41,10 +43,32 @@ watch(() => [formState.password, formState.confirmPassword],
         formState.confirmPasswordError = '';
       }
     })
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (formState.passwordError || formState.confirmPasswordError) {
-    // 如果有错误，不提交表单
+    console.log("Wrong");
     return;
+  }else{
+    const data = {
+      user_name: formState.user_name,
+      password: formState.password,
+      sex: 'a',
+      user_email: formState.user_email,
+      authority: 1,
+      account_number: 9,
+    };
+
+    try {
+      // 调用后端接口
+      const userdata = await register(data);
+      //console.log(userdata.data);
+      alert('注册成功！请登录。');
+      // 例如使用路由跳转登录页（需要导入vue-router的useRouter）
+      //router.push('/login');
+
+    } catch (error) {
+      alert('注册失败，请稍后重试。');
+      console.error(error);
+    }
   }
   // 继续处理表单提交
 };
@@ -59,24 +83,25 @@ const handleSubmit = () => {
         :label-col="{ span: 8 }"
         :wrapper-col="{ span: 16 }"
         autocomplete="off"
+        @finish="handleSubmit"
     >
       <h1 class="title">注册</h1>
       <p class="description">欢迎</p>
       <a-form-item
           class="input"
           label="用户名"
-          name="userName"
+          name="user_name"
           :rules="[{ required: true, message: '请输入您的用户名！' }]"
       >
-        <a-input v-model:value="formState.userName" placeholder="请输入用户名"/>
+        <a-input v-model:value="formState.user_name" placeholder="请输入用户名"/>
       </a-form-item>
       <a-form-item
           class="input"
           label="邮箱"
-          name="email"
+          name="user_email"
           :rules="[{required:true, message:'请输入您的邮箱!'}]"
       >
-        <a-input v-model:value="formState.userEmail" placeholder="请输入邮箱"/>
+        <a-input v-model:value="formState.user_email" placeholder="请输入邮箱"/>
       </a-form-item>
       <a-form-item
           class="input"
@@ -89,13 +114,18 @@ const handleSubmit = () => {
       <a-form-item
           class="input"
           label="确认密码"
-          name="confirmpassword"
+          name="confirmPassword"
           :rules="[{required: true,message:'请再次输入您的密码！'}]"
       >
         <a-input-password v-model:value="formState.confirmPassword" placeholder="请再次输入密码"/>
       </a-form-item>
       <a-form-item :wrapper-col="{ offset: 7, span: 10 }">
-        <a-button class="ant-btn" type="primary" html-type="submit">注册</a-button>
+        <a-button class="ant-btn" type="primary" html-type="submit" >注册</a-button>
+      </a-form-item>
+      <a-form-item :wrapper-col="{ offset: 7, span: 10 }">
+        <span>已有账号？
+          <router-link to="/login" style="color: #1890ff;">去登录</router-link>
+        </span>
       </a-form-item>
     </a-form>
   </div>

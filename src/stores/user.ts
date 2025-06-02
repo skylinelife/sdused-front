@@ -6,13 +6,35 @@ export const userInfoStore=defineStore('userInfo',{
         isLogin:false,
         //登录用户信息
         userInfo:{
-            userId:null,
+            //userId:null,
             user_name:null,
             userPermission:null,
-            userPhone:null,
+            user_phone:null,
         }
     }),
     persist:{
-        storage:sessionStorage,//读取时采用sessionStorage.getItem("key")
+        storage:localStorage,//读取时采用sessionStorage.getItem("key")
+    },
+    actions:{
+            // 设置登录用户信息
+            setUserInfo(userData:any) {
+                //this.userInfo.userId = userData.userId;
+                //this.userInfo.user_name = userData.user_name;
+                //this.userInfo.userPermission = userData.userPermission;
+                //this.userInfo.user_phone = userData.userPhone;
+                this.isLogin = true;
+                this.userInfo.user_name=userData;
+            },
+
+            clearUserInfo() {
+                //this.userInfo.userId = null;
+                this.userInfo.user_name = null;
+                this.userInfo.userPermission = null;
+                this.userInfo.user_phone = null;
+                this.isLogin = false;
+            },
+            setLoginStatus(status:any) {
+                this.isLogin = status;
+            }
     }
 })
