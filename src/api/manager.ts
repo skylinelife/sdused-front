@@ -1,6 +1,6 @@
 import request from "@/utils/axios.ts";
 
-export function getAllUsersInfo(params:any){
+export async function getAllUsersInfo(params:any){
     console.log(params)
     const adminNameValue = params.admin_name;
     const paramsForRequest: { admin_name?: string } = {};
@@ -14,11 +14,42 @@ export function getAllUsersInfo(params:any){
     });
 }
 
-export function getArticleList(params:any){
+export async function getArticleList(params:any){
     return request({
         url:`/article/list`,
         method:'get',
         params:params,
+    })
+}
+
+export async function getArticleDetail(params:any){
+    console.log('getArticleDetail',params)
+    return request({
+        url:`/article/detail/${params}`,
+        method:'get',
+    })
+}
+
+export async function getArticleComment(params:any){
+    return request({
+        url:`/comment/list/${params}`,
+        method:'get',
+    })
+}
+
+export async function deleteArticle(data:any){
+    return request({
+        url:`/article/delete/${data}`,
+        method:'post',
+        data:data,
+    })
+}
+
+export async function deleteComment(data:any){
+    return request({
+        url:`/comment/delete`,
+        method:'post',
+        data:data,
     })
 }
 // import request from "@/utils/axios.ts";

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {reactive, h, ref, watch, computed } from 'vue';
-import {getAllUsersInfo, getArticleList} from '@/api/manager.ts';
+import {deleteArticle, getAllUsersInfo, getArticleList} from '@/api/manager.ts';
 import { usePagination } from 'vue-request';
 import type { TablePaginationConfig, SorterResult, FilterValue, TableCurrentDataSource } from 'ant-design-vue/es/table/interface';
-import {Space, Modal, type FormInstance} from 'ant-design-vue';
+import {Space, Modal, type FormInstance, message} from 'ant-design-vue';
 import {userInfoStore} from "@/stores/user.ts";
+import ArticleDetail from "@/components/ArticleDetail.vue";
 
 const viewModalVisible = ref(false);
 const deleteModalVisible = ref(false);
@@ -128,6 +129,32 @@ const handleTableChange = (
     ...sortParams,
   });
 };
+
+const handleConfirmDelete = async () => {
+  if (!selectedRecord.value || !selectedRecord.value.article_id) {
+    message.error('未选择要删除的文章或文章ID无效');
+    deleteModalVisible.value = false;
+    return;
+  }
+
+  try {
+    const articleIdToDelete = selectedRecord.value.article_id;
+    await deleteArticle(articleIdToDelete);
+
+    message.success('文章删除成功！');
+    deleteModalVisible.value = false;
+    selectedRecord.value = null;
+    run({
+      pageNow: current.value,
+      pageSize: pageSize.value,
+    });
+
+  } catch (err: any) {
+    console.error('删除文章失败:', err);
+    const errorMessage = err.response?.data?.message || err.message || '删除文章失败，请重试';
+    message.error(errorMessage);
+  }
+};
 </script>
 
 <template>
@@ -147,17 +174,28 @@ const handleTableChange = (
         :loading="loading"
         @change="handleTableChange"
     >
-
     </a-table>
   </div>
   <a-modal
       v-model:visible="viewModalVisible"
-      title="查看文章详细信息"
       :ok-button-props="{ style: { display: 'none' } }"
       cancel-text="关闭"
-      width="600px"
+      width="1250px"
   >
-
+    <ArticleDetail v-if="selectedRecord && selectedRecord.article_id" :articleId="selectedRecord.article_id"/>
+    <div v-else-if="viewModalVisible">
+      <p>正在加载文章详情，或所选文章无效...</p>
+    </div>
+  </a-modal>
+  <a-modal
+      v-model:visible="deleteModalVisible"
+      title="删除文章"
+      ok-text="确认删除"
+      ok-type="danger"
+      cancel-text="取消"
+      @ok="handleConfirmDelete"
+  >
+    <p v-if="selectedRecord">确定要删除文章 "{{ selectedRecord.article_name }}" 吗？此操作无法撤销。</p>
   </a-modal>
 </template>
 

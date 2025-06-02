@@ -12,6 +12,27 @@ export const userInfoStore=defineStore('userInfo',{
             user_phone:null,
         }
     }),
+    actions: {
+        // 设置登录用户信息
+        setUserInfo(userData:any) {
+            this.userInfo.userId = userData.userId;
+            this.userInfo.user_name = userData.user_name;
+            this.userInfo.userPermission = userData.userPermission;
+            this.userInfo.userPhone = userData.userPhone;
+            this.isLogin = true;
+        },
+
+        clearUserInfo() {
+            this.userInfo.userId = null;
+            this.userInfo.user_name = null;
+            this.userInfo.userPermission = null;
+            this.userInfo.userPhone = null;
+            this.isLogin = false;
+        },
+        setLoginStatus(status:any) {
+            this.isLogin = status;
+        }
+    },
     persist:{
         storage:localStorage,//读取时采用sessionStorage.getItem("key")
     },
