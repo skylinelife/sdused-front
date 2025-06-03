@@ -41,4 +41,28 @@ export async function login(data:any) {
 //     })
 // }
 
-//
+//文章细节内容
+export async function articleDetail(aid:any){
+    return request({
+        url:`/article/detail/${aid}`,
+        method:'get',
+    })
+}
+
+//文章点赞
+export async function articleLike(data:any){
+    return request({
+        url:'/article/like',
+        method:'post',
+        data:data,
+    })
+}
+
+//文章取消点赞
+export async function articleUnlike(data:any){
+    return request({
+        url:'/article/unlike',
+        method:'post',
+        data:data,
+    })
+}

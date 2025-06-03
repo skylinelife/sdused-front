@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import {userInfoStore} from "@/stores/user.ts";
+import ArticleDetail from "@/components/ArticleDetail.vue";
 const listData: Record<string, string>[] = [];
 
 const userStore=userInfoStore();
@@ -30,6 +31,7 @@ const actions: Record<string, any>[] = [
 </script>
 
 <template>
+  <div class="article-list">
   <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
     <template #footer>
       <div>
@@ -62,8 +64,15 @@ const actions: Record<string, any>[] = [
       </a-list-item>
     </template>
   </a-list>
+  </div>
 </template>
 
 <style scoped>
-
+.article-list{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding:16px;
+  border-left:1px solid #dcdcdc;
+  border-right:1px solid #dcdcdc;
+}
 </style>

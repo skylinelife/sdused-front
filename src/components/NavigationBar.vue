@@ -50,7 +50,6 @@ watch(
 
 <style scoped>
 .navigation-bar-container {
-
   display: flex;
   justify-content: center; 
   width: 100%;           

@@ -48,10 +48,10 @@ const actions: Record<string, any>[] = [
     <!-- 用户信息卡片 -->
     <div class="panel">
       <a-card class="profile-card" title="个人中心">
-        <div class="avatar-wrapper">
+        <div class="avatar-wrapper avatar-horizontal">
           <a-avatar
               shape="circle"
-              size="100"
+              size="large"
               src="https://joeschmoe.io/api/v1/random"
           />
           <div class="username">{{ store.userInfo.user_name }}</div>
@@ -59,7 +59,7 @@ const actions: Record<string, any>[] = [
 
         <a-descriptions
             bordered
-            :column="1"
+            :column="2"
             layout="horizontal"
             size="middle"
             class="descriptions"
@@ -139,6 +139,7 @@ const actions: Record<string, any>[] = [
 .panel {
   width: 100%; /* 统一宽度 */
   min-width: 400px;
+  max-width: 1200px;
 }
 
 .profile-card {
@@ -155,6 +156,21 @@ const actions: Record<string, any>[] = [
   align-items: center;
   margin-bottom: 24px;
 }
+
+.avatar-horizontal {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.avatar-horizontal .username {
+  margin-top: 0;
+  align-self: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #1890ff;
+}
+
 
 .username {
   margin-top: 12px;

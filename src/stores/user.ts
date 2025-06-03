@@ -8,8 +8,8 @@ export const userInfoStore=defineStore('userInfo',{
         userInfo:{
             //userId:null,
             user_name:null,
-            userPermission:null,
-            user_phone:null,
+            userAuthority:0,
+            userPhone:null,
         }
     }),
     actions: {
@@ -17,7 +17,7 @@ export const userInfoStore=defineStore('userInfo',{
         setUserInfo(userData:any) {
             this.userInfo.userId = userData.userId;
             this.userInfo.user_name = userData.user_name;
-            this.userInfo.userPermission = userData.userPermission;
+            this.userInfo.userAuthority = userData.userAuthority;
             this.userInfo.userPhone = userData.userPhone;
             this.isLogin = true;
         },
@@ -25,7 +25,7 @@ export const userInfoStore=defineStore('userInfo',{
         clearUserInfo() {
             this.userInfo.userId = null;
             this.userInfo.user_name = null;
-            this.userInfo.userPermission = null;
+            this.userInfo.userAuthority = null;
             this.userInfo.userPhone = null;
             this.isLogin = false;
         },
@@ -44,7 +44,8 @@ export const userInfoStore=defineStore('userInfo',{
                 //this.userInfo.userPermission = userData.userPermission;
                 //this.userInfo.user_phone = userData.userPhone;
                 this.isLogin = true;
-                this.userInfo.user_name=userData;
+                this.userInfo.user_name=userData.user_name;
+                this.userInfo.userAuthority=userData.userAuthority;
             },
 
             clearUserInfo() {

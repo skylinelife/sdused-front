@@ -37,7 +37,7 @@ const handleSubmit = async () =>  {
     localStorage.removeItem('remember');
   }
   const data = {
-    account_number: 1,
+    account_number: 1,//TODO
     user_name: formState.user_name,
     password: formState.password,
   };
@@ -46,11 +46,16 @@ const handleSubmit = async () =>  {
     const res = await login(data);
     console.log(res);
     if(res.data.message === "Login successful"){
-      userStore.setUserInfo(res.data.user_name);
+      userStore.setUserInfo(res.data);
         //TODO
       console.log(userStore.userInfo.user_name);
       if(userStore.isLogin===true) {
-        router.push('/recommend');
+        if(userStore.userInfo.userAuthority===0) {
+          router.push('/recommend');
+        }
+        else{
+          router.push('/manage')
+        }
       }
     }
     else{
