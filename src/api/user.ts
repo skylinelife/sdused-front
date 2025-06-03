@@ -24,6 +24,14 @@ export async function login(data:any) {
     })
 }
 
+export async function getArticleComment(params:any){
+    return request({
+        url:`/comment/list/${params}`,
+        method:'get',
+        params:params,
+    })
+}
+
 //用户信息修改
 // export async function editUserInfo(data:any){
 //     return request({

@@ -9,7 +9,7 @@ export const userInfoStore=defineStore('userInfo',{
             //userId:null,
             user_name:null,
             userAuthority:0,
-            userPhone:null,
+            userEmail:null,
         }
     }),
     persist:{
@@ -24,14 +24,14 @@ export const userInfoStore=defineStore('userInfo',{
                 //this.userInfo.user_phone = userData.userPhone;
                 this.isLogin = true;
                 this.userInfo.user_name=userData.user_name;
-                this.userInfo.userAuthority=userData.userAuthority;
+                this.userInfo.userAuthority=userData.user_authority;
             },
 
             clearUserInfo() {
                 //this.userInfo.userId = null;
                 this.userInfo.user_name = null;
-                this.userInfo.userPermission = null;
-                this.userInfo.user_phone = null;
+                this.userInfo.userAuthority = 0;
+                this.userInfo.userEmail = null;
                 this.isLogin = false;
             },
             setLoginStatus(status:any) {

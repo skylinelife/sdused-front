@@ -5,7 +5,6 @@ import { List, Button, Spin, Alert, Modal, message } from 'ant-design-vue';
 import {deleteComment, getArticleComment, getArticleDetail} from "@/api/manager.ts";
 import {HeartOutlined}from '@ant-design/icons-vue'
 
-
 const props = defineProps({
   articleId: {
     type: [String, Number],

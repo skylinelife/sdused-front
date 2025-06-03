@@ -10,6 +10,7 @@ import UserManagementPage from "@/components/page/UserManagementPage.vue";
 import ArticleManagementPage from "@/components/page/ArticleManagementPage.vue";
 import StatisticsPage from "@/components/page/StatisticsPage.vue";
 import {userInfoStore} from "@/stores/user.ts";
+import ArticleView from "@/views/ArticleView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
