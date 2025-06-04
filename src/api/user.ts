@@ -1,4 +1,6 @@
 import request from "@/utils/axios.ts";
+import _default from "ant-design-vue/es/vc-slick/inner-slider";
+import data = _default.data;
 
 //获取用户信息
 export async function getUserInfo(userId:any) {
@@ -41,13 +43,13 @@ export async function getArticleComment(params:any){
 
 
 //文章推荐
-// export async function recommend(data:any){
-//     return request({
-//         url:'',
-//         method:'get',
-//         data:data,
-//     })
-// }
+export async function articleRecommend(data:any){
+    return request({
+        url:'',
+        method:'get',
+        data:data,
+    })
+}
 
 //文章细节内容
 export async function articleDetail(aid:any){
@@ -58,19 +60,36 @@ export async function articleDetail(aid:any){
 }
 
 //文章点赞
-export async function articleLike(data:any){
+export async function articleLike(aid:any){
     return request({
-        url:'/article/like',
+        url:`/article/like/${aid}`,
+        method:'post',
+    })
+}
+
+//文章取消点赞
+export async function articleUnlike(aid:any){
+    return request({
+        url:`/article/unlike/${aid}`,
+        method:'post',
+    })
+}
+
+//文章内容更新
+export async function articleUpdate(data:any){
+    return request({
+        url:`/article/update/${data.article_id}`,
         method:'post',
         data:data,
     })
 }
 
-//文章取消点赞
-export async function articleUnlike(data:any){
+//发表评论
+export async function addArticleComment(data:any){
     return request({
-        url:'/article/unlike',
+        url:'/comment/add',
         method:'post',
         data:data,
     })
 }
+

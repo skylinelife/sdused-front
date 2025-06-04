@@ -2,6 +2,7 @@
 import {reactive, ref, watch} from "vue";
 import request from '../utils/axios.ts';
 import {register} from "@/api/user.ts";
+import {useRouter} from "vue-router";
 
 const formState = reactive(
     {
@@ -13,7 +14,7 @@ const formState = reactive(
       confirmPasswordError: '',
     }
 )
-
+const router=useRouter();
 const validatePassword = (password: string) => {
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
@@ -44,17 +45,22 @@ watch(() => [formState.password, formState.confirmPassword],
       }
     })
 const handleSubmit = async () => {
-  if (formState.passwordError || formState.confirmPasswordError) {
+  if (formState.passwordError) {
     console.log("Wrong");
+    alert("密码必须包含大写字母、数字、小写字母、特殊符号中的至少三种。并且在6-20位之间")
     return;
-  }else{
+  }
+  else if(formState.confirmPasswordError) {
+    alert("两次密码输入不一致。");
+    return;
+  }
+  else{
     const data = {
       user_name: formState.user_name,
       password: formState.password,
-      sex: 'a',
-      user_email: formState.user_email,
-      authority: 1,
-      account_number: 9,
+      //sex: 'a',
+      email: formState.user_email,
+      //authority: 1,
     };
 
     try {
@@ -63,7 +69,7 @@ const handleSubmit = async () => {
       //console.log(userdata.data);
       alert('注册成功！请登录。');
       // 例如使用路由跳转登录页（需要导入vue-router的useRouter）
-      //router.push('/login');
+      router.push('/login');
 
     } catch (error) {
       alert('注册失败，请稍后重试。');
