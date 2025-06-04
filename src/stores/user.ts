@@ -24,7 +24,8 @@ export const userInfoStore=defineStore('userInfo',{
                 //this.userInfo.user_phone = userData.userPhone;
                 this.isLogin = true;
                 this.userInfo.user_name=userData.user_name;
-                this.userInfo.userAuthority=userData.user_authority;
+                this.userInfo.userAuthority=userData.authority;
+                //this.userInfo.userEmail=userData.email;
             },
 
             clearUserInfo() {
