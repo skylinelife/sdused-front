@@ -134,12 +134,16 @@ const actions: Record<string, any>[] = [
   padding: 60px 16px;
   background-color: #f0f2f5;
   gap: 40px; /* 上下间距 */
+  background-image: url("/src/assets/background.png");
+  background-size: 100% 100%;
+  background-attachment: fixed;
 }
 
 .panel {
   width: 100%; /* 统一宽度 */
   min-width: 400px;
   max-width: 1200px;
+  background-color: #e0e0e0;
 }
 
 .profile-card {

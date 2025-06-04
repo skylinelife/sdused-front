@@ -96,27 +96,44 @@ const getAllUsersInfoForPagination = (paramsFromPagination: { pageNow: number; p
 };
 
 const columns=[
-  {
-    title:'id',
-    dataIndex:'id',
-    width:'auto',
-  },
+  // {
+  //   title:'id',
+  //   dataIndex:'id',
+  //   width:'auto',
+  // },
   {
     title:'用户名',
-    dataIndex:'username',
-    width:'20%',
+    dataIndex:'user_name',
+    width:'auto',
   },
   {
     title:'性别',
     dataIndex:'sex',
+    width:'auto',
   },
   {
     title:'邮箱',
-    dataIndex:'email'
+    dataIndex:'email',
+    width:'auto',
+  },
+  {
+    title:'注册时间',
+    dataIndex:'user_age',
+    width:'auto',
+    customRender:(text:any)=>{
+      try {
+        console.log(text)
+        return new Date(text.text).toLocaleString();
+      } catch (e) {
+        console.error("Error formatting date:", text, e);
+        return text; // 如果转换失败，返回原始文本
+      }
+    }
   },
   {
     title:'操作',
     key:'operation',
+    width:'auto',
     customRender: ({ record }: { record: any }) => {
       return h(Space, null, [
         h('a', { onClick: () => handleView(record) }, '查看'),
@@ -134,7 +151,7 @@ const {
   current,
   pageSize,
   total,
-} = usePagination(getAllUsersInfoForPagination, {
+} = usePagination(getAllUsersInfo, {
   formatResult: (res:any) => {
     console.log("formatResult in usePagination options received:", res);
     if (res && res.data && Array.isArray(res.data.pageSize)) {
@@ -236,11 +253,11 @@ const handleTableChange = (
   >
   <div v-if="selectedRecord" style="padding: 16px 0;">
     <a-descriptions bordered :column="1" size="middle">
-      <a-descriptions-item label="ID">
-        {{ selectedRecord.id }}
-      </a-descriptions-item>
+<!--      <a-descriptions-item label="ID">-->
+<!--        {{ selectedRecord.id }}-->
+<!--      </a-descriptions-item>-->
       <a-descriptions-item label="用户名">
-        {{ selectedRecord.username }}
+        {{ selectedRecord.user_name }}
       </a-descriptions-item>
       <a-descriptions-item label="性别">
         <a-tag :color="selectedRecord.sex === '男' ? 'blue' : 'pink'">
@@ -249,6 +266,21 @@ const handleTableChange = (
       </a-descriptions-item>
       <a-descriptions-item label="邮箱">
         {{ selectedRecord.email }}
+      </a-descriptions-item>
+      <a-descriptions-item label="注册时间">
+        {{ new Date(selectedRecord.user_age).toLocaleString() }}
+      </a-descriptions-item>
+      <a-descriptions-item label="文章数量">
+        {{ selectedRecord.article_num }}
+      </a-descriptions-item>
+      <a-descriptions-item label="发布评论数">
+        {{ selectedRecord.comment_num }}
+      </a-descriptions-item>
+      <a-descriptions-item label="被评论数">
+        {{ selectedRecord.commented_count}}
+      </a-descriptions-item>
+      <a-descriptions-item label="用户权限">
+        {{selectedRecord.authority==='0'?'用户':'管理员'}}
       </a-descriptions-item>
     </a-descriptions>
   </div>
@@ -294,7 +326,7 @@ const handleTableChange = (
       ok-text="确认删除"
       ok-type="danger"
       cancel-text="取消"
-
+      @ok="handleDelete"
   >
     <p v-if="selectedRecord">确定要删除用户 "{{ selectedRecord.username }}" 吗？此操作无法撤销。</p>
   </a-modal>
