@@ -1,78 +1,146 @@
 <script setup lang="ts">
-import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
-import {userInfoStore} from "@/stores/user.ts";
-import ArticleDetail from "@/components/ArticleDetail.vue";
-const listData: Record<string, string>[] = [];
+import { LikeOutlined } from '@ant-design/icons-vue';
+import { userInfoStore } from "@/stores/user.ts";
+import { onMounted, ref } from "vue";
+import { articleRecommend } from "@/api/user";
 
-const userStore=userInfoStore();
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `ant design vue part ${i}`,
-    avatar: 'https://joeschmoe.io/api/v1/random',
-    description:
-        userStore.userInfo.user_name,
-    content:
-        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-  });
+interface simpleArticle {
+  article_id: number;
+  article_name: string;
+  user_name: string;
+  article_content: string;
+  useful_num: number;
+  publish_date: string;
 }
+
+const listData = ref<simpleArticle[]>([]);
+
+const fetchArticles = async () => {
+  try {
+    const res = await articleRecommend();
+    console.log(res);
+    listData.value = res || [];
+  } catch (err) {
+    alert("文章列表出错");
+    console.log(err);
+  }
+};
+
+onMounted(() => {
+  fetchArticles();
+});
+
+const userStore = userInfoStore();
 
 const pagination = {
   onChange: (page: number) => {
     console.log(page);
   },
-  pageSize: 3,
+  pageSize: 5,
 };
-const actions: Record<string, any>[] = [
-  { icon: StarOutlined, text: '156' },
-  { icon: LikeOutlined, text: '156' },
-  { icon: MessageOutlined, text: '2' },
-];
 </script>
 
 <template>
   <div class="article-list">
-  <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
-    <template #footer>
-      <div>
-        <b>ant design vue</b>
-        footer part
-      </div>
-    </template>
-    <template #renderItem="{ item }">
-      <a-list-item key="item.title">
-        <template #actions>
-          <span v-for="{ icon, text } in actions" :key="icon">
-            <component :is="icon" style="margin-right: 8px" />
-            {{ text }}
-          </span>
-        </template>
-        <template #extra>
-          <img
-              width="272"
-              alt="logo"
-              src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-          />
-        </template>
-        <a-list-item-meta :description="item.description">
-          <template #title>
-            <a :href="item.href">{{ item.title }}</a>
-          </template>
-          <template #avatar><a-avatar :src="item.avatar" /></template>
-        </a-list-item-meta>
-        {{ item.content }}
-      </a-list-item>
-    </template>
-  </a-list>
+    <a-list
+        item-layout="vertical"
+        size="large"
+        :pagination="pagination"
+        :data-source="listData"
+    >
+<!--      <template #footer>-->
+<!--        <div class="footer-tip">-->
+<!--          <b>已经到底了哦~</b>-->
+<!--        </div>-->
+<!--      </template>-->
+
+      <template #renderItem="{ item }">
+        <a-card class="article-card" hoverable :key="item.article_id">
+          <div class="card-header">
+            <a class="article-title" :href="`/article/${item.article_id}`">
+              {{ item.article_name }}
+            </a>
+            <span class="like-info">
+              <LikeOutlined style="color: #f5222d; margin-right: 4px" />
+              {{ item.useful_num }}
+            </span>
+          </div>
+          <div class="article-meta">
+            <span class="author">作者：{{ item.user_name }}</span>
+            <span class="date">
+              发布日期：{{ new Date(item.publish_date).toLocaleDateString() }}
+            </span>
+          </div>
+        </a-card>
+      </template>
+    </a-list>
   </div>
 </template>
 
 <style scoped>
-.article-list{
-  max-width: 1200px;
+.article-list {
+  max-width: 1000px;
   margin: 0 auto;
-  padding:16px;
-  border-left:1px solid #dcdcdc;
-  border-right:1px solid #dcdcdc;
+  padding: 24px;
+  background-color: #f9f9f9;
+}
+
+.footer-tip {
+  text-align: center;
+  color: #888;
+  margin-top: 16px;
+}
+
+.article-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s;
+}
+
+.article-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.article-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1890ff;
+  text-decoration: none;
+}
+
+.article-title:hover {
+  text-decoration: underline;
+}
+
+.like-info {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  color: #f5222d;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #888;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.author {
+  font-weight: 500;
+}
+
+.date {
+  font-style: italic;
 }
 </style>

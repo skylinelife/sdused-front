@@ -43,11 +43,10 @@ export async function getArticleComment(params:any){
 
 
 //文章推荐
-export async function articleRecommend(data:any){
+export async function articleRecommend(){
     return request({
-        url:'',
+        url:'/article/articleListByLiked',
         method:'get',
-        data:data,
     })
 }
 
@@ -92,4 +91,5 @@ export async function addArticleComment(data:any){
         data:data,
     })
 }
+
 
