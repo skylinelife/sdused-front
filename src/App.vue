@@ -17,7 +17,7 @@ const logout=()=>{
 </script>
 
 <template>
-  <header v-if="0">
+  <header v-if="store.userInfo.userAuthority===0">
     <NavigationBar/>
     <a-button class="logout-button" @click="logout" v-if="isLogin">退出登录</a-button>
     <a-button class="logout-button" @click="logout" v-else>登录</a-button>

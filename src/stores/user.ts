@@ -14,6 +14,7 @@ export const userInfoStore=defineStore('userInfo',{
             userArticle_num:0,
             userComment_num:0,
             password: '',
+            userAvatar: '',
         }
     }),
     persist:{

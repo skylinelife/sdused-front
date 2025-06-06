@@ -3,7 +3,7 @@ import { LikeOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
 import { userInfoStore } from '@/stores/user.ts';
 import { onMounted, ref } from 'vue';
-import { articleMy, updateUserInfo, getUserInfo } from '@/api/user';
+import { articleMy, updateUserInfo, getUserInfo,uploadAvatar, updatePassword } from '@/api/user';
 import { reactive } from 'vue';
 import { message } from 'ant-design-vue';
 
@@ -14,7 +14,51 @@ const editForm = reactive({
   password: '',
   confirmPassword: '',
   sex: '',
+  avatarBase64:'',
 });
+
+const isPasswordModalVisible = ref(false);
+const passwordForm = reactive({
+  password: '',
+  confirmPassword: ''
+});
+
+const openPasswordModal = () => {
+  passwordForm.password = '';
+  passwordForm.confirmPassword = '';
+  isPasswordModalVisible.value = true;
+};
+
+const handlePasswordOk = async () => {
+  if (passwordForm.password !== passwordForm.confirmPassword) {
+    message.error('两次输入的密码不一致');
+    return;
+  }
+
+  if (!validatePassword(passwordForm.password)) {
+    message.error('密码必须为6-20位，且至少包含大写、小写、数字、特殊字符中的三种');
+    return;
+  }
+
+  const data = {
+    user_name: store.userInfo.user_name,
+    password: passwordForm.password
+  };
+
+  try {
+    await updatePassword(data);
+    message.success('密码更新成功');
+    isPasswordModalVisible.value = false;
+  } catch (err) {
+    console.error('更新密码失败', err);
+    message.error('密码更新失败，请稍后再试');
+  }
+};
+
+const handlePasswordCancel = () => {
+  isPasswordModalVisible.value = false;
+};
+
 
 const validatePassword = (password: string) => {
   const rules = [
@@ -27,30 +71,61 @@ const validatePassword = (password: string) => {
   return password.length >= 6 && password.length <= 20 && passedRules >= 3;
 };
 
+const isAvatarModalVisible = ref(false);
+
+const openAvatarModal = () => {
+  isAvatarModalVisible.value = true;
+};
+
+const handleAvatarUpload = async () => {
+  if (!editForm.avatarBase64) {
+    message.error('请先选择头像图片');
+    return;
+  }
+
+  try {
+    const data = {
+      user_name: store.userInfo.user_name,
+      icon: editForm.avatarBase64,
+    };
+    await uploadAvatar(data);
+    message.success('头像上传成功');
+    isAvatarModalVisible.value = false;
+
+    // 更新头像
+    refreshUserInfo();
+  } catch (err) {
+    console.error('头像上传失败', err);
+    message.error('头像上传失败，请稍后重试');
+  }
+};
+
+
+const handleAvatarCancel = () => {
+  isAvatarModalVisible.value = false;
+};
+
+const beforeAvatarUpload = (file: File) => {
+  const reader = new FileReader();
+  reader.onload = () => {
+    editForm.avatarBase64 = reader.result as string;
+  };
+  reader.readAsDataURL(file);
+  return false; // 阻止自动上传
+};
+
 
 const openEditModal = () => {
   editForm.user_email = store.userInfo.userEmail || '';
-  editForm.password = store.userInfo.password;
-  editForm.confirmPassword = '';
   editForm.sex=store.userInfo.userSex||'男';
   isModalVisible.value = true;
 };
 
 const handleOk = async () => {
-  if (editForm.password !== editForm.confirmPassword) {
-    message.error('两次输入的密码不一致');
-    return;
-  }
-
-  if (!validatePassword(editForm.password)) {
-    message.error('密码必须为6-20位，且至少包含大写字母、小写字母、数字、特殊字符中的三种');
-    return;
-  }
 
   const data = {
     user_name: store.userInfo.user_name,
     email: editForm.user_email,
-    password: editForm.password,
     sex: editForm.sex
   };
 
@@ -96,6 +171,7 @@ const refreshUserInfo = async () => {
       store.userInfo.userSex = res.sex;
       store.userInfo.userArticle_num=res.article_num;
       store.userInfo.userComment_num=res.comment_num;
+      store.userInfo.userAvatar=res.icon;
     }
   } catch (err) {
     console.error('获取用户信息失败：', err);
@@ -141,10 +217,55 @@ const pagination = {
   <div class="profile-container">
     <div class="panel">
       <a-card class="profile-card" title="个人中心">
-
         <template #extra>
+          <a-button type="link" @click="openPasswordModal">修改密码</a-button>
           <a-button type="link" @click="openEditModal">修改信息</a-button>
+          <a-button type="link" @click="openAvatarModal">上传头像</a-button>
         </template>
+        <a-modal
+            v-model:open="isPasswordModalVisible"
+            title="修改密码"
+            @ok="handlePasswordOk"
+            @cancel="handlePasswordCancel"
+        >
+          <a-form layout="vertical">
+            <a-form-item label="新密码">
+              <a-input-password v-model:value="passwordForm.password" placeholder="请输入新密码" />
+            </a-form-item>
+            <a-form-item label="确认密码">
+              <a-input-password v-model:value="passwordForm.confirmPassword" placeholder="请再次输入密码" />
+            </a-form-item>
+          </a-form>
+        </a-modal>
+
+
+        <a-modal
+            v-model:open="isAvatarModalVisible"
+            title="上传头像"
+            @cancel="handleAvatarCancel"
+            footer=""
+        >
+          <a-upload
+              :before-upload="beforeAvatarUpload"
+              :show-upload-list="false"
+              accept="image/*"
+          >
+            <a-button>选择图片</a-button>
+          </a-upload>
+
+          <div v-if="editForm.avatarBase64" style="margin-top: 16px;">
+            <p>头像预览：</p>
+            <img
+                :src="editForm.avatarBase64"
+                alt="头像预览"
+                style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;"
+            />
+            <div style="margin-top: 16px; text-align: right;">
+              <a-button type="primary" @click="handleAvatarUpload">确认上传</a-button>
+            </div>
+          </div>
+        </a-modal>
+
 
 
         <a-modal
@@ -164,20 +285,13 @@ const pagination = {
                 <a-select-option value="保密">保密</a-select-option>
               </a-select>
             </a-form-item>
-            <a-form-item label="新密码">
-              <a-input-password v-model:value="editForm.password" placeholder="请输入新密码" :visibility-toggle="false"/>
-            </a-form-item>
-
-            <a-form-item label="确认密码">
-              <a-input-password v-model:value="editForm.confirmPassword" placeholder="请再次输入密码" />
-            </a-form-item>
           </a-form>
         </a-modal>
 
 
 
         <div class="avatar-wrapper avatar-horizontal">
-          <a-avatar shape="circle" size="large" src="https://joeschmoe.io/api/v1/random" />
+          <a-avatar shape="circle" size="large" :src="store.userInfo.userAvatar||'https://joeschmoe.io/api/v1/random'" />
           <div class="username">{{ store.userInfo.user_name }}</div>
         </div>
 
@@ -200,12 +314,19 @@ const pagination = {
 
     <!-- 文章列表 -->
     <div class="panel">
+      <header class="article-header">
+        <h2>我的文章</h2>
+        <a-button type="primary" @click="router.push('/createArticle')">创建文章</a-button>
+      </header>
+
+
       <a-list
           item-layout="vertical"
           size="large"
           :pagination="pagination"
           :data-source="listData"
       >
+
         <template #renderItem="{ item }">
           <a-card class="article-card" hoverable :key="item.article_id">
             <div class="card-header">
@@ -344,4 +465,13 @@ const pagination = {
 .date {
   font-style: italic;
 }
+.article-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+
 </style>

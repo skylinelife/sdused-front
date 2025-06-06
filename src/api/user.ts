@@ -44,6 +44,24 @@ export async function updateUserInfo(data:any){
     })
 }
 
+//用户密码修改
+export async function updatePassword(data:any){
+    return request({
+        url:'/user/set-password',
+        method:'post',
+        data:data,
+    })
+}
+
+//上传用户头像
+export async function uploadAvatar(data:any){
+    return request({
+        url:'/upload/avatar',
+        method:'post',
+        data:data,
+    })
+}
+
 
 //文章推荐
 export async function articleRecommend(){
@@ -82,6 +100,23 @@ export async function articleLike(aid:any){
 export async function articleUnlike(aid:any){
     return request({
         url:`/article/unlike/${aid}`,
+        method:'post',
+    })
+}
+
+//创建文章
+export async function articleCreate(data:any){
+    return request({
+        url:'/article/create',
+        method:'post',
+        data:data,
+    })
+}
+
+//删除文章
+export async function articleDelete(article_id:any){
+    return request({
+        url:`/article/delete/${article_id}`,
         method:'post',
     })
 }
