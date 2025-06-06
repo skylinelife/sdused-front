@@ -1,80 +1,199 @@
 <script setup lang="ts">
+import { LikeOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
 import { userInfoStore } from '@/stores/user.ts';
-import { onMounted } from 'vue';
-import {LikeOutlined, MessageOutlined, StarOutlined} from "@ant-design/icons-vue";
+import { onMounted, ref } from 'vue';
+import { articleMy, updateUserInfo, getUserInfo } from '@/api/user';
+import { reactive } from 'vue';
+import { message } from 'ant-design-vue';
+
+const isModalVisible = ref(false);
+
+const editForm = reactive({
+  user_email: '',
+  password: '',
+  confirmPassword: '',
+  sex: '',
+});
+
+const validatePassword = (password: string) => {
+  const rules = [
+    /[A-Z]/,       // 大写字母
+    /[a-z]/,       // 小写字母
+    /[0-9]/,       // 数字
+    /[^A-Za-z0-9]/ // 特殊字符
+  ];
+  const passedRules = rules.filter((rule) => rule.test(password)).length;
+  return password.length >= 6 && password.length <= 20 && passedRules >= 3;
+};
+
+
+const openEditModal = () => {
+  editForm.user_email = store.userInfo.userEmail || '';
+  editForm.password = store.userInfo.password;
+  editForm.confirmPassword = '';
+  editForm.sex=store.userInfo.userSex||'男';
+  isModalVisible.value = true;
+};
+
+const handleOk = async () => {
+  if (editForm.password !== editForm.confirmPassword) {
+    message.error('两次输入的密码不一致');
+    return;
+  }
+
+  if (!validatePassword(editForm.password)) {
+    message.error('密码必须为6-20位，且至少包含大写字母、小写字母、数字、特殊字符中的三种');
+    return;
+  }
+
+  const data = {
+    user_name: store.userInfo.user_name,
+    email: editForm.user_email,
+    password: editForm.password,
+    sex: editForm.sex
+  };
+
+  try {
+    await updateUserInfo(data);
+    store.userInfo.userEmail = editForm.user_email;
+    message.success('信息已成功更新');
+    isModalVisible.value = false;
+    store.userInfo.userSex= editForm.sex;
+  } catch (error) {
+    console.error('更新失败：', error);
+    message.error('更新失败，请稍后重试');
+  }
+};
+
+const handleCancel = () => {
+  isModalVisible.value = false;
+};
+
+
+
+interface simpleArticle {
+  article_id: number;
+  article_name: string;
+  user_name: string;
+  article_content: string;
+  useful_num: number;
+  publish_date: string;
+}
 
 const router = useRouter();
 const store = userInfoStore();
+const listData = ref<simpleArticle[]>([]);
+
+const refreshUserInfo = async () => {
+  const params={
+    user_name: store.userInfo.user_name,
+  }
+  try {
+    const res = await getUserInfo(params);
+    if (res) {
+      store.userInfo.userEmail = res.email;
+      store.userInfo.userSex = res.sex;
+      store.userInfo.userArticle_num=res.article_num;
+      store.userInfo.userComment_num=res.comment_num;
+    }
+  } catch (err) {
+    console.error('获取用户信息失败：', err);
+    message.error('无法加载用户信息，请稍后再试');
+  }
+};
 
 // 如果未登录，跳转到登录页面
 onMounted(() => {
+  //console.log(store.userInfo.password);
   if (!store.isLogin) {
     alert('请先登录。');
     router.push('/login');
+  } else {
+    refreshUserInfo();
+    fetchArticles();
   }
 });
-const listData: Record<string, string>[] = [];
 
-const userStore=userInfoStore();
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `ant design vue part ${i}`,
-    avatar: 'https://joeschmoe.io/api/v1/random',
-    description:
-    userStore.userInfo.user_name,
-    content:
-        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-  });
-}
+const fetchArticles = async () => {
+  try {
+    const params={
+      user_name: store.userInfo.user_name,
+    }
+    console.log(params);
+    const res = await articleMy(params);
+    console.log(res);
+    listData.value = res || [];
+  } catch (err) {
+    alert('文章列表出错');
+    console.error(err);
+  }
+};
 
 const pagination = {
   onChange: (page: number) => {
     console.log(page);
   },
-  pageSize: 3,
+  pageSize: 5,
 };
-const actions: Record<string, any>[] = [
-  { icon: StarOutlined, text: '156' },
-  { icon: LikeOutlined, text: '156' },
-  { icon: MessageOutlined, text: '2' },
-];
-
 </script>
 
 <template>
   <div class="profile-container">
-    <!-- 用户信息卡片 -->
     <div class="panel">
       <a-card class="profile-card" title="个人中心">
+
+        <template #extra>
+          <a-button type="link" @click="openEditModal">修改信息</a-button>
+        </template>
+
+
+        <a-modal
+            v-model:open="isModalVisible"
+            title="修改个人信息"
+            @ok="handleOk"
+            @cancel="handleCancel"
+        >
+          <a-form layout="vertical">
+            <a-form-item label="邮箱">
+              <a-input v-model:value="editForm.user_email" placeholder="请输入邮箱" />
+            </a-form-item>
+            <a-form-item label="性别">
+              <a-select v-model:value="editForm.sex" placeholder="请选择性别">
+                <a-select-option value="男">男</a-select-option>
+                <a-select-option value="女">女</a-select-option>
+                <a-select-option value="保密">保密</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item label="新密码">
+              <a-input-password v-model:value="editForm.password" placeholder="请输入新密码" :visibility-toggle="false"/>
+            </a-form-item>
+
+            <a-form-item label="确认密码">
+              <a-input-password v-model:value="editForm.confirmPassword" placeholder="请再次输入密码" />
+            </a-form-item>
+          </a-form>
+        </a-modal>
+
+
+
         <div class="avatar-wrapper avatar-horizontal">
-          <a-avatar
-              shape="circle"
-              size="large"
-              src="https://joeschmoe.io/api/v1/random"
-          />
+          <a-avatar shape="circle" size="large" src="https://joeschmoe.io/api/v1/random" />
           <div class="username">{{ store.userInfo.user_name }}</div>
         </div>
 
-        <a-descriptions
-            bordered
-            :column="2"
-            layout="horizontal"
-            size="middle"
-            class="descriptions"
-        >
+        <a-descriptions bordered :column="2" layout="horizontal" size="middle" class="descriptions">
           <a-descriptions-item label="邮箱">
-            {{ store.userInfo.user_phone || "375046751@qq.com" }}
+            {{ store.userInfo.userEmail || "未绑定" }}
+          </a-descriptions-item>
+          <a-descriptions-item label="性别">
+            {{ store.userInfo.userSex || "保密" }}
           </a-descriptions-item>
           <a-descriptions-item label="发表文章数">
-            {{ store.userInfo.articleCount || 0 }}
+            {{ store.userInfo.userArticle_num || 0 }}
           </a-descriptions-item>
           <a-descriptions-item label="评论数量">
-            {{ store.userInfo.commentCount || 0 }}
-          </a-descriptions-item>
-          <a-descriptions-item label="入站时间">
-            {{ store.userInfo.registerTime || "2024-01-01" }}
+            {{ store.userInfo.userComment_num || 0 }}
           </a-descriptions-item>
         </a-descriptions>
       </a-card>
@@ -88,37 +207,24 @@ const actions: Record<string, any>[] = [
           :pagination="pagination"
           :data-source="listData"
       >
-        <template #footer>
-          <div>
-            <b>ant design vue</b>
-            footer part
-          </div>
-        </template>
         <template #renderItem="{ item }">
-          <a-list-item key="item.title">
-            <template #actions>
-              <span v-for="{ icon, text } in actions" :key="icon">
-                <component :is="icon" style="margin-right: 8px" />
-                {{ text }}
+          <a-card class="article-card" hoverable :key="item.article_id">
+            <div class="card-header">
+              <a class="article-title" :href="`/article/${item.article_id}`">
+                {{ item.article_name }}
+              </a>
+              <span class="like-info">
+                <LikeOutlined style="color: #f5222d; margin-right: 4px" />
+                {{ item.useful_num }}
               </span>
-            </template>
-            <template #extra>
-              <img
-                  width="272"
-                  alt="logo"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-              />
-            </template>
-            <a-list-item-meta :description="item.description">
-              <template #title>
-                <a :href="item.href">{{ item.title }}</a>
-              </template>
-              <template #avatar>
-                <a-avatar :src="item.avatar" />
-              </template>
-            </a-list-item-meta>
-            {{ item.content }}
-          </a-list-item>
+            </div>
+            <div class="article-meta">
+              <span class="author">作者：{{ item.user_name }}</span>
+              <span class="date">
+                发布日期：{{ new Date(item.publish_date).toLocaleDateString() }}
+              </span>
+            </div>
+          </a-card>
         </template>
       </a-list>
     </div>
@@ -128,22 +234,22 @@ const actions: Record<string, any>[] = [
 <style scoped>
 .profile-container {
   display: flex;
-  flex-direction: column; /* 垂直排列 */
-  align-items: center; /* 居中 */
+  flex-direction: column;
+  align-items: center;
   min-height: 100vh;
   padding: 60px 16px;
   background-color: #f0f2f5;
-  gap: 40px; /* 上下间距 */
+  gap: 40px;
 }
 
 .panel {
-  width: 100%; /* 统一宽度 */
+  width: 100%;
   min-width: 400px;
   max-width: 1200px;
 }
 
 .profile-card {
-  width: 100%; /* 撑满 panel 宽度 */
+  width: 100%;
   padding: 24px;
   background-color: #fff;
   border-radius: 12px;
@@ -171,7 +277,6 @@ const actions: Record<string, any>[] = [
   color: #1890ff;
 }
 
-
 .username {
   margin-top: 12px;
   font-size: 20px;
@@ -181,5 +286,59 @@ const actions: Record<string, any>[] = [
 
 .descriptions {
   margin-top: 20px;
+}
+
+.article-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s;
+  background: #fff;
+}
+
+.article-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.article-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1890ff;
+  text-decoration: none;
+}
+
+.article-title:hover {
+  text-decoration: underline;
+}
+
+.like-info {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  color: #f5222d;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #888;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.author {
+  font-weight: 500;
+}
+
+.date {
+  font-style: italic;
 }
 </style>

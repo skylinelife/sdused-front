@@ -10,6 +10,10 @@ export const userInfoStore=defineStore('userInfo',{
             user_name:null,
             userAuthority:0,
             userEmail:null,
+            userSex:null,
+            userArticle_num:0,
+            userComment_num:0,
+            password: '',
         }
     }),
     persist:{
@@ -23,8 +27,10 @@ export const userInfoStore=defineStore('userInfo',{
                 //this.userInfo.userPermission = userData.userPermission;
                 //this.userInfo.user_phone = userData.userPhone;
                 this.isLogin = true;
+                this.userInfo.userEmail = userData.userEmail;
                 this.userInfo.user_name=userData.user_name;
                 this.userInfo.userAuthority=userData.authority;
+                this.userInfo.userSex=userData.userSex;
                 //this.userInfo.userEmail=userData.email;
             },
 
@@ -33,6 +39,7 @@ export const userInfoStore=defineStore('userInfo',{
                 this.userInfo.user_name = null;
                 this.userInfo.userAuthority = 0;
                 this.userInfo.userEmail = null;
+                this.userInfo.userSex=null;
                 this.isLogin = false;
             },
             setLoginStatus(status:any) {

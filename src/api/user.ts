@@ -3,10 +3,11 @@ import _default from "ant-design-vue/es/vc-slick/inner-slider";
 import data = _default.data;
 
 //获取用户信息
-export async function getUserInfo(userId:any) {
+export async function getUserInfo(user_name:any) {
     return request({
-        url: `/user/${userId}`,
+        url: `/user/info`,
         method: 'get',
+        params: user_name
     });
 }
 //提交注册表单
@@ -35,11 +36,13 @@ export async function getArticleComment(params:any){
 }
 
 //用户信息修改
-// export async function editUserInfo(data:any){
-//     return request({
-//         url:''
-//     })
-// }
+export async function updateUserInfo(data:any){
+    return request({
+        url:'/user/update',
+        method:'post',
+        data:data,
+    })
+}
 
 
 //文章推荐
@@ -47,6 +50,15 @@ export async function articleRecommend(){
     return request({
         url:'/article/articleListByLiked',
         method:'get',
+    })
+}
+
+//用户自己的文章列表
+export async function articleMy(params: any){
+    return request({
+        url:'/article/searchArticleByUserName',
+        method:'get',
+        params:params,
     })
 }
 

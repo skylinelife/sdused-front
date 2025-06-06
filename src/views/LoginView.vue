@@ -50,6 +50,7 @@ const handleSubmit = async () =>  {
         //TODO
       console.log(userStore.userInfo);
       if(userStore.isLogin===true) {
+        userStore.userInfo.password=data.password;
         if(userStore.userInfo.userAuthority===0) {
           router.push('/recommend');
         }
