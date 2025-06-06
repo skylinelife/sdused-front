@@ -95,8 +95,14 @@ onMounted(() => {
 </script>
 
 <template>
+  <div class="header">
+    <a-page-header
+        style="border: 1px solid rgb(235, 237, 240)"
+        title="数据统计"
+        :back-icon="false"
+    />
+  </div>
   <div class="data-statistics-dashboard" style="padding: 24px; background-color: #f0f2f5;">
-    <a-page-header title="数据统计概览" sub-title="关键指标汇总" style="background-color: #fff; margin-bottom: 24px;" />
 
     <!-- 用户数据 -->
     <a-card title="用户数据统计" :loading="isLoadingUserStats" style="margin-bottom: 24px;">

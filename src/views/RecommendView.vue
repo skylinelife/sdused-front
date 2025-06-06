@@ -74,6 +74,7 @@ const pagination = {
         </a-card>
       </template>
     </a-list>
+
   </div>
 </template>
 

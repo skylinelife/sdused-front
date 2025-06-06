@@ -2,17 +2,19 @@ import request from "@/utils/axios.ts";
 import type {ArticleStats, TopArticle, UserStats} from "@/components/page/StatisticsPage.vue";
 
 export async function getAllUsersInfo(params:any){
-    // console.log(params)
-    // const adminNameValue = params.admin_name;
-    // const paramsForRequest: { admin_name?: string } = {};
-    // if (adminNameValue !== undefined) {
-    //     paramsForRequest.admin_name = adminNameValue;
-    // }
     return request({
         url: `/admin/user/list`,
         method: 'get',
         params:params,
     });
+}
+
+export async function updateUserInfo(data:any){
+    return request({
+        url:`/user/update`,
+        method:'post',
+        data:data,
+    })
 }
 
 export async function getArticleList(params:any){
