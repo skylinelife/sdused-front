@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {reactive, watch, h, ref } from 'vue'; // 1. 确保 ref 已导入
+import {reactive, watch, h, ref, onMounted} from 'vue'; // 1. 确保 ref 已导入
 import { useRouter, useRoute } from 'vue-router'; // 2. 导入 useRouter 和 useRoute
 import {
   MenuFoldOutlined,
@@ -12,9 +12,19 @@ import {
   AppstoreOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue';
+import {userInfoStore} from "@/stores/user.ts";
 const collapsed = ref<boolean>(false);
 const router = useRouter();
 const route = useRoute();
+const store = userInfoStore();
+
+onMounted(()=>{
+  console.log(store.isLogin);
+  console.log(store.userInfo);
+  if(!store.isLogin){
+    router.push('/recommend');
+  }
+})
 
 const state = reactive({
   collapsed: false,
@@ -67,6 +77,9 @@ const handleMenuClick = (event: { key: string }) => {
   router.push({ name: event.key });
 };
 
+const handleHeaderClick=()=>{
+  router.push('/recommend')
+}
 </script>
 
 <template>
@@ -87,8 +100,13 @@ const handleMenuClick = (event: { key: string }) => {
         ></a-menu>
       </div>
     </a-layout-sider>
-    <a-layout-content style="margin: 0 16px">
-      <router-view/>
+    <a-layout-content style="margin: 0">
+      <a-layout-header style="display: flex; justify-content: flex-end;align-items: center; padding: 0 16px;">
+        <a-button type="primary" @click="handleHeaderClick" style="margin-left: 16px;">跳转推荐页</a-button>
+      </a-layout-header>
+      <a-layout-content style="margin: 0 18px">
+        <router-view/>
+      </a-layout-content>
     </a-layout-content>
   </a-layout>
 </template>

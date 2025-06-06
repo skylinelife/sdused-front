@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import {reactive, h, ref, watch, computed } from 'vue';
-import { getAllUsersInfo } from '@/api/manager.ts';
+import {getAllUsersInfo, updateUserInfo} from '@/api/manager.ts';
 import { usePagination } from 'vue-request';
 import type { TablePaginationConfig, SorterResult, FilterValue, TableCurrentDataSource } from 'ant-design-vue/es/table/interface';
-import {Space, Modal, type FormInstance} from 'ant-design-vue';
+import {Space, Modal, type FormInstance, message} from 'ant-design-vue';
 import {userInfoStore} from "@/stores/user.ts";
 
 const store=userInfoStore();
 // Modal visibility states
 const viewModalVisible = ref(false);
 const editModalVisible = ref(false);
-const deleteModalVisible = ref(false);
+// const deleteModalVisible = ref(false);
 const selectedRecord = ref<any | null>(null);
 
 const editFormRef = ref<FormInstance>();
 const editFormData = reactive({
-  id: null as number | null,
   username: '',
   email: '',
   sex: '',
+  password:'',
 });
 const editFormRules = {
   email: [
@@ -33,41 +33,46 @@ const editFormRules = {
 const handleView = (record: any) => {
   selectedRecord.value = record;
   viewModalVisible.value = true;
+  console.log(record);
 };
 
 const handleEdit = (record: any) => {
   selectedRecord.value = record;
-  editFormData.id = record.id;
-  editFormData.username = record.username;
+  editFormData.username = record.user_name;
+  editFormData.password = '';
   editFormData.email = record.email;
   editFormData.sex = record.sex;
   editModalVisible.value = true;
   editFormRef.value?.clearValidate();
+  console.log(editFormData);
 };
 
 const handleEditModalOk = async () => {
   try {
     if (!editFormRef.value) return;
-    await editFormRef.value.validate(); //触发表单验证
-    // 验证通过
-    console.log('表单数据待保存:', { ...editFormData });
-    // 在这里调用API更新数据，例如:
-    // await updateUserAPI(editFormData.id, editFormData);
+    await editFormRef.value.validate(); // 表单校验
 
-    const index = tableDataSource.value.findIndex(item => item.id === editFormData.id);
-    if (index !== -1 && tableDataSource.value[index]) {
-      // 注意：直接修改 tableDataSource.value[index] 的属性可能不会触发深度响应，
-      // 最好是替换整个对象或重新获取数据。
-      // 为了演示，我们假设它能工作，但 run() 是更稳妥的方式。
-      // tableDataSource.value[index] = { ...tableDataSource.value[index], email: editFormData.email, sex: editFormData.sex };
-      console.log("数据已在 editFormData 中更新, 实际应调用 API 并刷新列表");
+    const dataToUpdate: any = {
+      username: editFormData.username,
+      email: editFormData.email,
+      sex: editFormData.sex,
+    };
+
+    if (editFormData.password && editFormData.password.trim() !== '') {
+      dataToUpdate.password = editFormData.password;
     }
 
+    console.log('表单数据待保存:', dataToUpdate);
+
+    const response = await updateUserInfo(dataToUpdate);
+    message.success('用户信息更新成功！');
     editModalVisible.value = false;
-    // 刷新表格数据
-    // run({ page: current.value, pageSize: pageSize.value });
-  } catch (errorInfo) {
-    console.log('表单验证失败:', errorInfo);
+    run({ pageNow: current.value, pageSize: pageSize.value });
+    
+  }catch(err:any){
+    console.error("编辑用户失败");
+    const errorMessage = err.response?.data?.message || err.message || '编辑用户失败，请重试';
+    message.error(errorMessage);
   }
 };
 
@@ -75,25 +80,25 @@ const handleEditModalCancel = () => {
   editModalVisible.value = false;
 };
 
-const handleDelete = (record: any) => {
-  selectedRecord.value = record;
-  deleteModalVisible.value = true;
-};
+// const handleDelete = (record: any) => {
+//   selectedRecord.value = record;
+//   deleteModalVisible.value = true;
+// };
 
-const getAllUsersInfoForPagination = (paramsFromPagination: { pageNow: number; pageSize: number; [key: string]: any }) => {
-  const adminNameFromStore = 'root';
-
-  console.log('Wrapper: paramsFromPagination received:', paramsFromPagination);
-  console.log('Wrapper: admin_name from store:', adminNameFromStore);
-
-  const finalParams = {
-    ...paramsFromPagination,
-    admin_name: adminNameFromStore,
-  };
-
-  console.log('Wrapper: finalParams for actual API call:', finalParams);
-  return getAllUsersInfo(finalParams);
-};
+// const getAllUsersInfoForPagination = (paramsFromPagination: { pageNow: number; pageSize: number; [key: string]: any }) => {
+//   const adminNameFromStore = 'root';
+//
+//   console.log('Wrapper: paramsFromPagination received:', paramsFromPagination);
+//   console.log('Wrapper: admin_name from store:', adminNameFromStore);
+//
+//   const finalParams = {
+//     ...paramsFromPagination,
+//     admin_name: adminNameFromStore,
+//   };
+//
+//   console.log('Wrapper: finalParams for actual API call:', finalParams);
+//   return getAllUsersInfo(finalParams);
+// };
 
 const columns=[
   // {
@@ -122,7 +127,7 @@ const columns=[
     width:'auto',
     customRender:(text:any)=>{
       try {
-        console.log(text)
+        // console.log(text)
         return new Date(text.text).toLocaleString();
       } catch (e) {
         console.error("Error formatting date:", text, e);
@@ -138,7 +143,7 @@ const columns=[
       return h(Space, null, [
         h('a', { onClick: () => handleView(record) }, '查看'),
         h('a', { onClick: () => handleEdit(record) }, '编辑'),
-        h('a', { onClick: () => handleDelete(record) }, '删除'),
+        // h('a', { onClick: () => handleDelete(record) }, '删除'),
       ]);
     },
   }
@@ -280,7 +285,7 @@ const handleTableChange = (
         {{ selectedRecord.commented_count}}
       </a-descriptions-item>
       <a-descriptions-item label="用户权限">
-        {{selectedRecord.authority==='0'?'用户':'管理员'}}
+        {{selectedRecord.authority=='0'?'用户':'管理员'}}
       </a-descriptions-item>
     </a-descriptions>
   </div>
@@ -292,7 +297,7 @@ const handleTableChange = (
   <!-- 编辑用户模态框 -->
   <a-modal
       v-model:visible="editModalVisible"
-      :title="'编辑用户 - ' + (selectedRecord?.username || '')"
+      :title="'编辑用户 - ' + (selectedRecord?.user_name || '')"
       ok-text="保存"
       cancel-text="取消"
       @ok="handleEditModalOk"
@@ -307,6 +312,9 @@ const handleTableChange = (
       <a-form-item label="用户名">
         <a-input :value="editFormData.username" disabled />
       </a-form-item>
+<!--      <a-form-item label="密码">-->
+<!--        <a-input :value="editFormData.password"/>-->
+<!--      </a-form-item>-->
       <a-form-item label="邮箱" name="email">
         <a-input v-model:value="editFormData.email" />
       </a-form-item>
@@ -316,20 +324,19 @@ const handleTableChange = (
           <a-radio value="女">女</a-radio>
         </a-radio-group>
       </a-form-item>
-      <!-- 根据需要添加更多可编辑字段 -->
     </a-form>
   </a-modal>
 
-  <a-modal
-      v-model:visible="deleteModalVisible"
-      title="删除用户"
-      ok-text="确认删除"
-      ok-type="danger"
-      cancel-text="取消"
-      @ok="handleDelete"
-  >
-    <p v-if="selectedRecord">确定要删除用户 "{{ selectedRecord.username }}" 吗？此操作无法撤销。</p>
-  </a-modal>
+<!--  <a-modal-->
+<!--      v-model:visible="deleteModalVisible"-->
+<!--      title="删除用户"-->
+<!--      ok-text="确认删除"-->
+<!--      ok-type="danger"-->
+<!--      cancel-text="取消"-->
+<!--      @ok="handleDelete"-->
+<!--  >-->
+<!--    <p v-if="selectedRecord">确定要删除用户 "{{ selectedRecord.username }}" 吗？此操作无法撤销。</p>-->
+<!--  </a-modal>-->
 
 </template>
 

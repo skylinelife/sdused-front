@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {RouterLink, RouterView,useRouter} from 'vue-router'
+import {RouterLink, RouterView, useRoute, useRouter} from 'vue-router'
 import NavigationBar from './components/NavigationBar.vue';
 import HelloWorld from './components/HelloWorld.vue';
 import {userInfoStore} from './stores/user.ts'
@@ -8,16 +8,20 @@ import {computed} from 'vue'
 const store=userInfoStore()
 const isLogin=computed(()=>store.isLogin)
 const router=useRouter();
+const route= useRoute();
 
 const logout=()=>{
   store.clearUserInfo();
   router.push('/login');
 }
 
+const showHeader = computed(() => {
+  return !route.path.startsWith('/manage');
+});
 </script>
 
 <template>
-  <header v-if="0">
+  <header v-if="showHeader">
     <NavigationBar/>
     <a-button class="logout-button" @click="logout" v-if="isLogin">退出登录</a-button>
     <a-button class="logout-button" @click="logout" v-else>登录</a-button>
