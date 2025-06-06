@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, defineProps, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { userInfoStore } from "@/stores/user.ts";
 import { List, Button, Spin, Alert, Modal, message } from 'ant-design-vue';
 import {deleteComment, getArticleComment, getArticleDetail} from "@/api/manager.ts";

@@ -29,7 +29,7 @@ watch(
         current.value = [];
       }
     },
-    { immediate: true } // 确保初始加载时也执行
+    { immediate: true }
 );
 
 
@@ -52,6 +52,6 @@ watch(
 .navigation-bar-container {
   display: flex;
   justify-content: center; 
-  width: 100%;           
+  width: 100%;
 }
 </style>

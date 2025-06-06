@@ -105,7 +105,6 @@ const refreshUserInfo = async () => {
 
 // 如果未登录，跳转到登录页面
 onMounted(() => {
-  //console.log(store.userInfo.password);
   if (!store.isLogin) {
     alert('请先登录。');
     router.push('/login');
@@ -240,12 +239,16 @@ const pagination = {
   padding: 60px 16px;
   background-color: #f0f2f5;
   gap: 40px;
+  background-image: url("/src/assets/background.png");
+  background-size: 100% 100%;
+  background-attachment: fixed;
 }
 
 .panel {
   width: 100%;
   min-width: 400px;
   max-width: 1200px;
+  background-color: #e0e0e0;
 }
 
 .profile-card {

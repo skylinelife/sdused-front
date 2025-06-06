@@ -37,6 +37,14 @@ const columns=[
     title:'发布日期',
     dataIndex:'publish_date',
     width:'auto',
+    customRender:(text:any)=>{
+      try {
+        return new Date(text.text).toLocaleString();
+      } catch (e) {
+        console.error("Error formatting date:", text, e);
+        return text; // 如果转换失败，返回原始文本
+      }
+    }
   },
   {
     title:'作者',
