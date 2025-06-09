@@ -17,6 +17,14 @@ export async function updateUserInfo(data:any){
     })
 }
 
+export async function setUserPassword(data:any){
+    return request({
+        url:`/user/set-password`,
+        method:'post',
+        data:data,
+    })
+}
+
 export async function getArticleList(params:any){
     return request({
         url:`/article/list`,
@@ -56,46 +64,67 @@ export async function deleteComment(data:any){
     })
 }
 
+export async function fetchUserStats():Promise<UserStats>{
+    return request({
+        url:`/user/state`,
+        method:'get',
+    })
+}
+
+export async function fetchArticleStats():Promise<ArticleStats>{
+    return request({
+        url:`/article/state`,
+        method:'get',
+    })
+}
+
+export async function fetchTopArticles():Promise<TopArticle>{
+    return request({
+        url:`/article/top`,
+        method:'get',
+    })
+}
+
 // 模拟API调用
-const mockDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// const mockDelay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+//
+// export async function fetchUserStatsApi(): Promise<UserStats> {
+//     await mockDelay(1000);
+//     return {
+//         totalUsers: 12345,
+//         newUsers: {
+//             daily: 52,
+//             weekly: 350,
+//             monthly: 1200,
+//         },
+//         activeUsers: {
+//             dau: 1500,
+//             wau: 5500,
+//             mau: 9500,
+//         },
+//     };
+// }
 
-export async function fetchUserStatsApi(): Promise<UserStats> {
-    await mockDelay(1000);
-    return {
-        totalUsers: 12345,
-        newUsers: {
-            daily: 52,
-            weekly: 350,
-            monthly: 1200,
-        },
-        activeUsers: {
-            dau: 1500,
-            wau: 5500,
-            mau: 9500,
-        },
-    };
-}
-
-export async function fetchArticleStatsApi(): Promise<ArticleStats> {
-    await mockDelay(1200);
-    return {
-        totalArticles: 587,
-        newArticlesToday: 12,
-        totalComments: 2340,
-        totalLikes: 15032,
-    };
-}
-
-export async function fetchTopArticlesApi(limit: number = 5): Promise<TopArticle[]> {
-    await mockDelay(800);
-    return [
-        { id: '1', title: '探索Vue 3 Composition API的奥秘', likes: 1250 },
-        { id: '2', title: '深入理解TypeScript泛型编程', likes: 980 },
-        { id: '3', title: 'Ant Design Vue实战指南', likes: 850 },
-        { id: '4', title: '后端架构演进之路：从单体到微服务', likes: 760 },
-        { id: '5', title: '数据可视化入门与实践', likes: 620 },
-    ].slice(0, limit);
-}
+// export async function fetchArticleStatsApi(): Promise<ArticleStats> {
+//     await mockDelay(1200);
+//     return {
+//         totalArticles: 587,
+//         newArticlesToday: 12,
+//         totalComments: 2340,
+//         totalLikes: 15032,
+//     };
+// }
+//
+// export async function fetchTopArticlesApi(limit: number = 5): Promise<TopArticle[]> {
+//     await mockDelay(800);
+//     return [
+//         { id: '1', title: '探索Vue 3 Composition API的奥秘', likes: 1250 },
+//         { id: '2', title: '深入理解TypeScript泛型编程', likes: 980 },
+//         { id: '3', title: 'Ant Design Vue实战指南', likes: 850 },
+//         { id: '4', title: '后端架构演进之路：从单体到微服务', likes: 760 },
+//         { id: '5', title: '数据可视化入门与实践', likes: 620 },
+//     ].slice(0, limit);
+// }
 
 // import request from "@/utils/axios.ts";
 

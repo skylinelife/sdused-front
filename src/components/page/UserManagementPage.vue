@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import {reactive, h, ref, watch, computed } from 'vue';
-import {getAllUsersInfo, updateUserInfo} from '@/api/manager.ts';
+import {getAllUsersInfo, setUserPassword, updateUserInfo} from '@/api/manager.ts';
 import { usePagination } from 'vue-request';
 import type { TablePaginationConfig, SorterResult, FilterValue, TableCurrentDataSource } from 'ant-design-vue/es/table/interface';
 import {Space, Modal, type FormInstance, message} from 'ant-design-vue';
 import {userInfoStore} from "@/stores/user.ts";
 
 const store=userInfoStore();
+
 // Modal visibility states
 const viewModalVisible = ref(false);
 const editModalVisible = ref(false);
-// const deleteModalVisible = ref(false);
+const resetModalVisible = ref(false);
 const selectedRecord = ref<any | null>(null);
 
 const editFormRef = ref<FormInstance>();
@@ -18,7 +19,7 @@ const editFormData = reactive({
   username: '',
   email: '',
   sex: '',
-  password:'',
+  icon:'',
 });
 const editFormRules = {
   email: [
@@ -30,6 +31,11 @@ const editFormRules = {
   ],
 };
 
+const resetFormData = reactive({
+  username:'',
+  password:'',
+})
+
 const handleView = (record: any) => {
   selectedRecord.value = record;
   viewModalVisible.value = true;
@@ -39,7 +45,7 @@ const handleView = (record: any) => {
 const handleEdit = (record: any) => {
   selectedRecord.value = record;
   editFormData.username = record.user_name;
-  editFormData.password = '';
+  editFormData.icon = record.icon;
   editFormData.email = record.email;
   editFormData.sex = record.sex;
   editModalVisible.value = true;
@@ -53,14 +59,11 @@ const handleEditModalOk = async () => {
     await editFormRef.value.validate(); // 表单校验
 
     const dataToUpdate: any = {
-      username: editFormData.username,
+      user_name: editFormData.username,
       email: editFormData.email,
       sex: editFormData.sex,
+      icon: editFormData.icon,
     };
-
-    if (editFormData.password && editFormData.password.trim() !== '') {
-      dataToUpdate.password = editFormData.password;
-    }
 
     console.log('表单数据待保存:', dataToUpdate);
 
@@ -80,10 +83,37 @@ const handleEditModalCancel = () => {
   editModalVisible.value = false;
 };
 
-// const handleDelete = (record: any) => {
-//   selectedRecord.value = record;
-//   deleteModalVisible.value = true;
-// };
+const handleReset = (record: any) => {
+  selectedRecord.value = record;
+  resetFormData.username=record.user_name;
+  resetModalVisible.value = true;
+  console.log(record);
+};
+
+const handleResetOK = async () => {
+  try {
+    const randomBytes = ref(new Uint8Array(10))
+    crypto.getRandomValues(randomBytes.value)
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'
+    for (let i = 0; i < 10; i++) {
+      const index = randomBytes.value[i] % charset.length
+      resetFormData.password += charset[index]
+    }
+    console.log(resetFormData.password);
+    const data: any = {
+      user_name: resetFormData.username,
+      password: resetFormData.password,
+    }
+    const response = await setUserPassword(data);
+    message.success('用户信息更新成功！');
+    resetModalVisible.value = false;
+    run({pageNow: current.value, pageSize: pageSize.value});
+  } catch (err: any) {
+    console.error("重置密码失败");
+    const errorMessage = err.response?.data?.message || err.message || '重置密码失败，请重试';
+    message.error(errorMessage);
+  }
+}
 
 // const getAllUsersInfoForPagination = (paramsFromPagination: { pageNow: number; pageSize: number; [key: string]: any }) => {
 //   const adminNameFromStore = 'root';
@@ -122,7 +152,7 @@ const columns=[
     width:'auto',
   },
   {
-    title:'注册时间',
+    title:'上次活跃时间',
     dataIndex:'user_age',
     width:'auto',
     customRender:(text:any)=>{
@@ -143,7 +173,7 @@ const columns=[
       return h(Space, null, [
         h('a', { onClick: () => handleView(record) }, '查看'),
         h('a', { onClick: () => handleEdit(record) }, '编辑'),
-        // h('a', { onClick: () => handleDelete(record) }, '删除'),
+        h('a', { onClick: () => handleReset(record) }, '重置密码'),
       ]);
     },
   }
@@ -327,16 +357,15 @@ const handleTableChange = (
     </a-form>
   </a-modal>
 
-<!--  <a-modal-->
-<!--      v-model:visible="deleteModalVisible"-->
-<!--      title="删除用户"-->
-<!--      ok-text="确认删除"-->
-<!--      ok-type="danger"-->
-<!--      cancel-text="取消"-->
-<!--      @ok="handleDelete"-->
-<!--  >-->
-<!--    <p v-if="selectedRecord">确定要删除用户 "{{ selectedRecord.username }}" 吗？此操作无法撤销。</p>-->
-<!--  </a-modal>-->
+  <a-modal
+      v-model:visible="resetModalVisible"
+      title="重置密码"
+      ok-text="确认"
+      cancel-text="取消"
+      @ok="handleResetOK"
+  >
+    <p v-if="selectedRecord">确定要重置用户 {{ selectedRecord.user_name }} 的密码吗？此操作无法撤销。</p>
+  </a-modal>
 
 </template>
 

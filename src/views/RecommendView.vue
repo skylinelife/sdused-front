@@ -41,6 +41,7 @@ const pagination = {
 </script>
 
 <template>
+<div class="container">
   <div class="article-list">
     <a-list
         item-layout="vertical"
@@ -48,11 +49,11 @@ const pagination = {
         :pagination="pagination"
         :data-source="listData"
     >
-<!--      <template #footer>-->
-<!--        <div class="footer-tip">-->
-<!--          <b>已经到底了哦~</b>-->
-<!--        </div>-->
-<!--      </template>-->
+      <!--      <template #footer>-->
+      <!--        <div class="footer-tip">-->
+      <!--          <b>已经到底了哦~</b>-->
+      <!--        </div>-->
+      <!--      </template>-->
 
       <template #renderItem="{ item }">
         <a-card class="article-card" hoverable :key="item.article_id">
@@ -76,14 +77,32 @@ const pagination = {
     </a-list>
 
   </div>
+</div>
 </template>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 16px;
+  background-color: #f0f2f5;
+  gap: 30px;
+  background-image: url("/src/assets/recommend.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 .article-list {
-  max-width: 1000px;
+  width: 70%;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
-  background-color: #f9f9f9;
+  padding: 30px;
+  background-color: rgba(249, 249, 249, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .footer-tip {
@@ -93,10 +112,11 @@ const pagination = {
 }
 
 .article-card {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s;
+  padding: 16px;
 }
 
 .article-card:hover {
@@ -111,7 +131,7 @@ const pagination = {
 }
 
 .article-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
   color: #1890ff;
   text-decoration: none;

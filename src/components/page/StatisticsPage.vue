@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Comment from "@/components/Comment.vue";
 import {onMounted, ref} from "vue";
-import {fetchArticleStatsApi, fetchTopArticlesApi, fetchUserStatsApi} from "@/api/manager.ts";
+import {fetchArticleStats, fetchTopArticles, fetchUserStats} from "@/api/manager.ts";
 
 export interface UserStats {
   totalUsers: number;
@@ -50,7 +50,9 @@ async function loadUserStats() {
   isLoadingUserStats.value = true;
   userStatsError.value = null;
   try {
-    userStats.value = await fetchUserStatsApi();
+    const response=await fetchUserStats();
+    console.log(response.data);
+    userStats.value = response.data;
   } catch (error: any) {
     console.error('Failed to load user stats:', error);
     userStatsError.value = error.message || '加载用户数据失败';
@@ -64,7 +66,8 @@ async function loadArticleStats() {
   isLoadingArticleStats.value = true;
   articleStatsError.value = null;
   try {
-    articleStats.value = await fetchArticleStatsApi();
+    const response=await fetchArticleStats();
+    articleStats.value = response;
   } catch (error: any) {
     console.error('Failed to load article stats:', error);
     articleStatsError.value = error.message || '加载文章数据失败';
@@ -78,7 +81,13 @@ async function loadTopArticles() {
   isLoadingTopArticles.value = true;
   topArticlesError.value = null;
   try {
-    topArticles.value = await fetchTopArticlesApi(5); // 获取前5条
+    const response=await fetchTopArticles();
+    topArticles.value = response.map((item: any) => ({
+      id: item.article_id,
+      title: item.article_name,
+      likes: item.useful_num,
+      url: `/article/${item.article_id}`
+    }));
   } catch (error: any) {
     console.error('Failed to load top articles:', error);
     topArticlesError.value = error.message || '加载热门文章失败';
@@ -115,24 +124,24 @@ onMounted(() => {
             <a-statistic title="用户总量 (注册)" :value="userStats.totalUsers" />
           </a-col>
         </a-row>
-        <a-divider orientation="left" style="margin-top: 24px; margin-bottom: 16px;">新增用户</a-divider>
-        <a-row :gutter="[16, 24]">
-          <a-col :xs="24" :sm="12" :md="8">
-            <a-statistic title="今日新增" :value="userStats.newUsers.daily">
-              <template #suffix>人</template>
-            </a-statistic>
-          </a-col>
-          <a-col :xs="24" :sm="12" :md="8">
-            <a-statistic title="本周新增" :value="userStats.newUsers.weekly">
-              <template #suffix>人</template>
-            </a-statistic>
-          </a-col>
-          <a-col :xs="24" :sm="12" :md="8">
-            <a-statistic title="本月新增" :value="userStats.newUsers.monthly">
-              <template #suffix>人</template>
-            </a-statistic>
-          </a-col>
-        </a-row>
+<!--        <a-divider orientation="left" style="margin-top: 24px; margin-bottom: 16px;">新增用户</a-divider>-->
+<!--        <a-row :gutter="[16, 24]">-->
+<!--          <a-col :xs="24" :sm="12" :md="8">-->
+<!--            <a-statistic title="今日新增" :value="userStats.activeUsers.dau">-->
+<!--              <template #suffix>人</template>-->
+<!--            </a-statistic>-->
+<!--          </a-col>-->
+<!--          <a-col :xs="24" :sm="12" :md="8">-->
+<!--            <a-statistic title="本周新增" :value="userStats.activeUsers.wau">-->
+<!--              <template #suffix>人</template>-->
+<!--            </a-statistic>-->
+<!--          </a-col>-->
+<!--          <a-col :xs="24" :sm="12" :md="8">-->
+<!--            <a-statistic title="本月新增" :value="userStats.activeUsers.mau">-->
+<!--              <template #suffix>人</template>-->
+<!--            </a-statistic>-->
+<!--          </a-col>-->
+<!--        </a-row>-->
         <a-divider orientation="left" style="margin-top: 24px; margin-bottom: 16px;">活跃用户</a-divider>
         <a-row :gutter="[16, 24]">
           <a-col :xs="24" :sm="12" :md="8">

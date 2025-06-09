@@ -15,6 +15,10 @@ const logout=()=>{
   router.push('/login');
 }
 
+const manage=()=>{
+  router.push('/manage');
+}
+
 const showHeader = computed(() => {
   return !route.path.startsWith('/manage');
 });
@@ -23,6 +27,7 @@ const showHeader = computed(() => {
 <template>
   <header v-if="showHeader">
     <NavigationBar/>
+    <a-button class="logout-button" @click="manage" v-if="store.userInfo.userAuthority">跳转至管理端</a-button>
     <a-button class="logout-button" @click="logout" v-if="isLogin">退出登录</a-button>
     <a-button class="logout-button" @click="logout" v-else>登录</a-button>
   </header>
