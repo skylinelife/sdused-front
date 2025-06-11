@@ -128,16 +128,21 @@ const submitEdit = async () => {
 <template>
   <div class="article-detail-container">
     <a-card v-if="article" class="article-card">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1 class="article-title" v-if="!isEditing">{{ article.title }}</h1>
-        <a-input v-if="isEditing" v-model:value="editedTitle" class="article-title" />
-
-        <div v-if="store.userInfo.user_name === article.author && !isEditing">
-          <a-button type="primary" @click="isEditing = true">修改文章</a-button>
-          <a-button type="default" danger style="margin-left: 8px;" @click="deleteArticle">删除文章</a-button>
+      <div>
+        <div>
+          <h1 class="article-title" v-if="!isEditing">{{ article.title }}</h1>
+          <a-input v-if="isEditing" v-model:value="editedTitle" class="article-title" />
         </div>
 
+        <div
+            v-if="store.userInfo.user_name === article.author && !isEditing"
+            style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;"
+        >
+          <a-button type="primary" @click="isEditing = true">修改文章</a-button>
+          <a-button type="default" danger @click="deleteArticle">删除文章</a-button>
+        </div>
       </div>
+
 
       <div class="article-meta" v-if="!isEditing">
         <span>作者：{{ article.author }}</span>
@@ -164,8 +169,11 @@ const submitEdit = async () => {
         </template>
       </div>
 
-      <!-- 评论组件只有在非编辑状态下显示 -->
-      <Comment v-if="!isEditing" :article-id="articleId" />
+      <!-- 评论区域标题和组件 -->
+      <div v-if="!isEditing">
+        <h2 class="comment-title">评论</h2>
+        <Comment :article-id="articleId" />
+      </div>
     </a-card>
 
     <a-empty v-else description="正在加载文章..." />
@@ -217,4 +225,14 @@ const submitEdit = async () => {
 .article-content p{
   margin-bottom:1em;
 }
+.comment-title {
+  margin-top: 32px;
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
 </style>
