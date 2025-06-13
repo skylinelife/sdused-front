@@ -63,12 +63,7 @@ const handleSubmit = async () => {
     };
 
     try {
-      // 调用后端接口
-      //const userdata = await register(data);
-      //console.log(userdata);
       alert('注册成功！请登录。');
-      // 例如使用路由跳转登录页（需要导入vue-router的useRouter）
-      // router.push('/login');
 
     } catch (error) {
       alert('注册失败，请稍后重试。');

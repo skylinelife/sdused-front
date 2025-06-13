@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {reactive, watch, h, ref, onMounted} from 'vue'; // 1. 确保 ref 已导入
-import { useRouter, useRoute } from 'vue-router'; // 2. 导入 useRouter 和 useRoute
+import {reactive, watch, h, ref, onMounted} from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,

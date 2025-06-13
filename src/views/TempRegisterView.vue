@@ -64,11 +64,11 @@ const handleSubmit = async () => {
     };
 
     try {
-      // 调用后端接口
+
       const userdata = await register(data);
       //console.log(userdata.data);
       alert('注册成功！请登录。');
-      // 例如使用路由跳转登录页（需要导入vue-router的useRouter）
+
       router.push('/login');
 
     } catch (error) {
@@ -160,7 +160,7 @@ body {
   padding: 2.5rem;
   background-color: #ffff;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 增强阴影 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   margin-top: 250px;
   margin-left: auto;
   margin-right: auto;

@@ -33,7 +33,7 @@ const deleteArticle = async () => {
   try {
     const res=await articleDelete(articleId);
     message.success('文章已删除');
-    router.push('/'); // ✅ 删除后跳转首页或文章列表
+    router.push('/'); //删除后跳转首页或文章列表
   } catch (err) {
     console.error(err);
     message.error('删除失败');

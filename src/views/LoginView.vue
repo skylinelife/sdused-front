@@ -25,7 +25,7 @@ console.log(userStore.userInfo.user_name);
 //   }
 // );
 
-// 在组件挂载时尝试从localStorage中恢复状态
+
 if (localStorage.getItem('remember')) {
   Object.assign(formState, JSON.parse(localStorage.getItem('remember') || '{}'));
 }
@@ -146,7 +146,7 @@ body {
   padding: 2.5rem;
   background-color: #ffff;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 增强阴影 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   margin-top: 250px;
   margin-left: auto;
   margin-right: auto;

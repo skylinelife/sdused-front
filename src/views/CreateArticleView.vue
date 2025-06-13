@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
-import { articleCreate } from '@/api/user.ts'; // ✅ 假设你在这里放了创建文章 API
+import { articleCreate } from '@/api/user.ts';
 import { userInfoStore } from '@/stores/user.ts';
 
 const router = useRouter();

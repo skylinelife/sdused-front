@@ -12,6 +12,7 @@ const props = defineProps({
   },
 });
 
+const store=userInfoStore();
 
 interface Article {
   id: number|string;
@@ -28,7 +29,6 @@ interface Comment {
   created_at: string;
 }
 
-// 响应式状态
 const articleDetails = ref<Article | null>(null);
 const commentsList = ref<Comment[]>([]);
 const isLoadingArticle = ref(false);
@@ -36,7 +36,7 @@ const isLoadingComments = ref(false);
 const articleError = ref<string | null>(null);
 const commentsError = ref<string | null>(null);
 
-// 获取文章详情的方法
+// 获取文章详情
 const fetchArticleDetails = async (id: string | number) => {
   isLoadingArticle.value = true;
   articleError.value = null;
@@ -53,7 +53,7 @@ const fetchArticleDetails = async (id: string | number) => {
   }
 };
 
-//获取评论列表的方法
+//获取评论列表
 const fetchComments = async (id: string | number) => {
   isLoadingComments.value = true;
   commentsError.value = null;
@@ -69,10 +69,10 @@ const fetchComments = async (id: string | number) => {
   }
 };
 
-//处理删除评论的方法
+//处理删除评论
 const handleDeleteComment = (commentId: string | number) => {
   // const operator=userStore.userInfo.user_name;
-  const operator='root';
+  const operator=store.userInfo.user_name;
   const data={
     user_name:operator,
     comment_id:commentId,
@@ -99,7 +99,7 @@ const handleDeleteComment = (commentId: string | number) => {
   });
 };
 
-// 监听 articleId prop 的变化，以便在 ID 更改时重新加载数据
+// 监听 articleId prop 的变化
 watch(
     () => props.articleId,
     async (newId) => {
@@ -146,7 +146,6 @@ watch(
         <a-descriptions-item label="文章内容">
           <div class="article-content-wrapper" v-html="articleDetails.article_content"></div>
         </a-descriptions-item>
-        <!-- 您可以根据 articleDetails 中的实际字段添加更多的 a-descriptions-item -->
       </a-descriptions>
     </div>
     <hr v-if="articleDetails" />

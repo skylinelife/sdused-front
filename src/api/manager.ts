@@ -140,7 +140,7 @@ export async function fetchTopArticles():Promise<TopArticle>{
 //             username: `User${i}`,
 //             sex: i % 2 === 0 ? '男' : '女',
 //             email: `user${i}@example.com`,
-//             // 您可以根据需要添加更多字段
+//
 //         });
 //     }
 //
@@ -148,12 +148,12 @@ export async function fetchTopArticles():Promise<TopArticle>{
 //     const page = params?.page || 1;
 //     const pageSize = params?.results || 10; // 'results' 是您在 usePagination 中 pageSizeKey 设置的值
 //
-//     // 计算当前页的数据
+//
 //     const startIndex = (page - 1) * pageSize;
 //     const endIndex = page * pageSize;
 //     const paginatedUsers = allMockUsers.slice(startIndex, endIndex);
 //
-//     // 模拟 API 延迟
+//
 //     return new Promise((resolve) => {
 //         setTimeout(() => {
 //             resolve({
@@ -161,9 +161,7 @@ export async function fetchTopArticles():Promise<TopArticle>{
 //                 data: {
 //                     results: paginatedUsers, // 当前页的用户列表
 //                     total: allMockUsers.length, // 所有用户的总数
-//                     // 您可以根据API的实际响应添加其他字段，例如：
-//                     // currentPage: page,
-//                     // pageSize: pageSize,
+//
 //                 }
 //             });
 //         }, 500); // 模拟500ms的网络延迟

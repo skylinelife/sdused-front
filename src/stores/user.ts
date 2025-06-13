@@ -18,7 +18,7 @@ export const userInfoStore=defineStore('userInfo',{
         }
     }),
     persist:{
-        storage:localStorage,//读取时采用sessionStorage.getItem("key")
+        storage:localStorage,
     },
     actions:{
             // 设置登录用户信息

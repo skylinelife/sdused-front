@@ -122,7 +122,6 @@ watch(
   </a-list>
   <a-comment>
     <template #avatar>
-<!--      <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />-->
     </template>
     <template #content>
       <a-form-item>
